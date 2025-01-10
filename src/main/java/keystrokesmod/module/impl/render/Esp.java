@@ -4,13 +4,14 @@ import keystrokesmod.Raven;
 import keystrokesmod.event.Render3DEvent;
 import keystrokesmod.module.Module;
 import keystrokesmod.module.impl.world.AntiBot;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.awt.*;
@@ -35,7 +36,7 @@ public class Esp extends Module {
     // none, outline, box, shaded, 2d, ring
 
     public Esp() {
-        super("Esp", category.render, 0);
+        super("Esp", Category.render, 0);
         this.registerSetting(red = new SliderSetting("Red", 0.0D, 0.0D, 255.0D, 1.0D));
         this.registerSetting(green = new SliderSetting("Green", 255.0D, 0.0D, 255.0D, 1.0D));
         this.registerSetting(blue = new SliderSetting("Blue", 0.0D, 0.0D, 255.0D, 1.0D));
@@ -64,11 +65,14 @@ public class Esp extends Module {
 
     @EventTarget
     public void onRenderWorld(Render3DEvent e) {
-        if (Utils.nullCheck()) {
-            int rgb = rainbow.isToggled() ? Utils.getChroma(2L, 0L) : this.rgb_c;
+        if (GeneralUtils.nullCheck()) {
+            int rgb = rainbow.isToggled() ? GeneralUtils.getChroma(2L, 0L) : this.rgb_c;
             if (Raven.debugger) {
                 for (final Entity entity : mc.theWorld.loadedEntityList) {
-                    if (onlyPlayers.isToggled() && entity instanceof EntityPlayer && entity != mc.thePlayer) {
+                    if (onlyPlayers.isToggled() && !(entity instanceof EntityPlayer))
+                        continue;
+
+                    if (entity != mc.thePlayer) {
                         if (teamColor.isToggled()) {
                             rgb = getColorFromTags(entity.getDisplayName().getFormattedText());
                         }
@@ -122,7 +126,7 @@ public class Esp extends Module {
     }
 
     public int getColorFromTags(String displayName) {
-        displayName = Utils.removeFormatCodes(displayName);
+        displayName = GeneralUtils.removeFormatCodes(displayName);
         if (displayName.isEmpty() || !displayName.startsWith("§") || displayName.charAt(1) == 'f') {
             return -1;
         }

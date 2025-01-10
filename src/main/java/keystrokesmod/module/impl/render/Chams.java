@@ -3,7 +3,7 @@ package keystrokesmod.module.impl.render;
 import keystrokesmod.event.RenderEntityEvent;
 import keystrokesmod.module.Module;
 import keystrokesmod.module.impl.world.AntiBot;
-import keystrokesmod.module.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.ButtonSetting;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.lenni0451.asmevents.event.enums.EnumEventType;
 import net.minecraft.entity.Entity;
@@ -19,7 +19,7 @@ public class Chams extends Module {
     private HashSet<Entity> bots = new HashSet<>();
 
     public Chams() {
-        super("Chams", Module.category.render, 0);
+        super("Chams", Category.render, 0);
         this.registerSetting(onlyPlayers = new ButtonSetting("Only Players", false));
         this.registerSetting(showYourself = new ButtonSetting("Show Yourself(what)", false));
         this.registerSetting(ignoreBots = new ButtonSetting("Ignore bots", false));

@@ -4,10 +4,10 @@ import keystrokesmod.event.PreUpdateEvent;
 import keystrokesmod.event.Render3DEvent;
 import keystrokesmod.event.SendPacketEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.utility.PacketUtils;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.util.PacketUtils;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.network.Packet;
@@ -33,7 +33,7 @@ public class Blink extends Module {
     private int color = new Color(0, 255, 0).getRGB();
     private int blinkTicks;
     public Blink() {
-        super("Blink", category.player);
+        super("Blink", Category.player);
         this.registerSetting(initialPosition = new ButtonSetting("Show initial position", true));
     }
 
@@ -56,7 +56,7 @@ public class Blink extends Module {
 
     @EventTarget
     public void onSendPacket(SendPacketEvent e) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             this.disable();
             return;
         }
@@ -83,7 +83,7 @@ public class Blink extends Module {
 
     @EventTarget
     public void onRenderWorld(Render3DEvent e) {
-        if (!Utils.nullCheck() || pos == null || !initialPosition.isToggled()) {
+        if (!GeneralUtils.nullCheck() || pos == null || !initialPosition.isToggled()) {
             return;
         }
         drawBox(pos);

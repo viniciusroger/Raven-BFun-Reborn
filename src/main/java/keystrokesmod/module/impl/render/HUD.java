@@ -2,13 +2,13 @@ package keystrokesmod.module.impl.render;
 
 import keystrokesmod.event.Render2DEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.ModuleManager;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Theme;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.manager.ModuleManager;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.enums.Theme;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -32,7 +32,7 @@ public class HUD extends Module {
     private boolean canShowInfo;
 
     public HUD() {
-        super("HUD", Module.category.render);
+        super("HUD", Category.render);
         this.registerSetting(new DescriptionSetting("Right click bind to hide modules."));
         this.registerSetting(theme = new SliderSetting("Theme", Theme.themes, 0));
         this.registerSetting(new ButtonSetting("Edit position", () -> {
@@ -57,7 +57,7 @@ public class HUD extends Module {
 
     @EventTarget
     public void onRenderTick(Render2DEvent ev) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
         if (isAlphabeticalSort != alphabeticalSort.isToggled()) {
@@ -79,9 +79,7 @@ public class HUD extends Module {
                     if (module.isHidden()) {
                         continue;
                     }
-                    if (module == ModuleManager.commandLine) {
-                        continue;
-                    }
+
                     String moduleName = module.getName();
                     if (showInfo.isToggled() && !module.getInfo().isEmpty()) {
                         moduleName += " §7" + module.getInfo();
@@ -105,7 +103,7 @@ public class HUD extends Module {
             }
         }
         catch (Exception e) {
-            Utils.sendMessage("&cAn error occurred rendering HUD. check your logs");
+            GeneralUtils.sendMessage("&cAn error occurred rendering HUD. check your logs");
             e.printStackTrace();
         }
     }
@@ -210,9 +208,7 @@ public class HUD extends Module {
                         if (module.isHidden()) {
                             continue;
                         }
-                        if (module == ModuleManager.commandLine) {
-                            continue;
-                        }
+
                         String moduleName = module.getName();
                         if (showInfo.isToggled() && !module.getInfo().isEmpty()) {
                             moduleName += " §7" + module.getInfo();
@@ -283,9 +279,7 @@ public class HUD extends Module {
                     if (module.isHidden()) {
                         continue;
                     }
-                    if (module == ModuleManager.commandLine) {
-                        continue;
-                    }
+
                     return false;
                 }
             }

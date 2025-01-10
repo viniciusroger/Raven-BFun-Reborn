@@ -1,10 +1,10 @@
 package keystrokesmod.module.impl.player;
 
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.BlockUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.BlockUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import org.lwjgl.input.Mouse;
@@ -18,7 +18,7 @@ public class AutoTool extends Module {
     private int ticksHovered;
     private BlockPos currentBlock;
     public AutoTool() {
-        super("AutoTool", category.player);
+        super("AutoTool", Category.player);
         this.registerSetting(hoverDelay = new SliderSetting("Hover delay", 0.0, 0.0, 20.0, 1.0));
         this.registerSetting(rightDisable = new ButtonSetting("Disable while right click", true));
         this.registerSetting(requireMouse = new ButtonSetting("Require mouse down", true));
@@ -59,7 +59,7 @@ public class AutoTool extends Module {
         }
         currentBlock = over.getBlockPos();
         if (hoverDelay.getInput() == 0 || ticksHovered > hoverDelay.getInput()) {
-            int slot = Utils.getTool(BlockUtils.getBlock(currentBlock));
+            int slot = GeneralUtils.getTool(BlockUtils.getBlock(currentBlock));
             if (slot == -1) {
                 return;
             }

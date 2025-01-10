@@ -1,12 +1,11 @@
 package keystrokesmod.module;
 
-import keystrokesmod.Raven;
-import keystrokesmod.module.setting.Setting;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.manager.ModuleManager;
+import keystrokesmod.setting.Setting;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.EventManager;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -16,7 +15,7 @@ import java.util.Iterator;
 public class Module {
     protected ArrayList<Setting> settings;
     private String moduleName;
-    private Module.category moduleCategory;
+    private Category moduleCategory;
     private boolean enabled;
     private int keycode;
     protected static Minecraft mc;
@@ -25,7 +24,7 @@ public class Module {
     public boolean ignoreOnSave = false;
     public boolean hidden = false;
 
-    public Module(String moduleName, Module.category moduleCategory, int keycode) {
+    public Module(String moduleName, Category moduleCategory, int keycode) {
         this.moduleName = moduleName;
         this.moduleCategory = moduleCategory;
         this.keycode = keycode;
@@ -49,7 +48,7 @@ public class Module {
         return module;
     }
 
-    public Module(String name, Module.category moduleCategory) {
+    public Module(String name, Category moduleCategory) {
         this.moduleName = name;
         this.moduleCategory = moduleCategory;
         this.keycode = 0;
@@ -70,7 +69,7 @@ public class Module {
             }
             catch (Exception e) {
                 e.printStackTrace();
-                Utils.sendMessage("&cFailed to check keybinding. Setting to none");
+                GeneralUtils.sendMessage("&cFailed to check keybinding. Setting to none");
                 this.keycode = 0;
             }
         }
@@ -133,7 +132,7 @@ public class Module {
         this.settings.add(Setting);
     }
 
-    public Module.category moduleCategory() {
+    public Category moduleCategory() {
         return this.moduleCategory;
     }
 
@@ -172,17 +171,15 @@ public class Module {
         this.keycode = keybind;
     }
 
-    public static enum category {
+    public enum Category {
+        clicker,
         combat,
         movement,
         player,
         world,
         render,
-        minigames,
-        fun,
         other,
         client,
-        profiles,
-        scripts;
+        profiles
     }
 }

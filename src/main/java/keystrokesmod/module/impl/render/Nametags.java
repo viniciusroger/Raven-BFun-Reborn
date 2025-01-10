@@ -6,11 +6,11 @@ import keystrokesmod.event.RenderNametag;
 import keystrokesmod.module.Module;
 import keystrokesmod.module.impl.player.Freecam;
 import keystrokesmod.module.impl.world.AntiBot;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.*;
@@ -44,12 +44,12 @@ public class Nametags extends Module {
     private ButtonSetting showEnchants;
     private ButtonSetting showDurability;
     private ButtonSetting showStackSize;
-    private Map<EntityPlayer, double[]> entityPositions = new HashMap();
+    private Map<EntityPlayer, double[]> entityPositions = new HashMap<>();
     private int backGroundColor = new Color(0, 0, 0, 65).getRGB();
     private int friendColor = new Color(0, 255, 0, 255).getRGB();
     private int enemyColor = new Color(255, 0, 0, 255).getRGB();
     public Nametags() {
-        super("Nametags", category.render, 0);
+        super("Nametags", Category.render, 0);
         this.registerSetting(scale = new SliderSetting("Scale", 1.0, 0.5, 5.0, 0.1));
         this.registerSetting(autoScale = new ButtonSetting("Auto-scale", true));
         this.registerSetting(drawBackground = new ButtonSetting("Draw background", true));
@@ -69,7 +69,7 @@ public class Nametags extends Module {
 
     @EventTarget
     public void onRenderTick(Render2DEvent ev) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
 
@@ -87,10 +87,10 @@ public class Nametags extends Module {
                 name = entityPlayer.getDisplayName().getFormattedText();
             }
             if (showHealth.isToggled()) {
-                name = name + " " + Utils.getHealthStr(entityPlayer);
+                name = name + " " + GeneralUtils.getHealthStr(entityPlayer);
             }
             if (showHitsToKill.isToggled()) {
-                name = name + " " + Utils.getHitsToKill(entityPlayer, mc.thePlayer.getCurrentEquippedItem());
+                name = name + " " + GeneralUtils.getHitsToKill(entityPlayer, mc.thePlayer.getCurrentEquippedItem());
             }
             if (showDistance.isToggled()) {
                 int distance = Math.round(mc.thePlayer.getDistanceToEntity(entityPlayer));
@@ -120,7 +120,7 @@ public class Nametags extends Module {
             double rawScaleSetting = scale.getInput();
             double scaleSetting = rawScaleSetting * 10;
             double nameTagScale = twoDScale * scaleSetting;
-            final float renderPartialTicks = Utils.getTimer().renderPartialTicks;
+            final float renderPartialTicks = GeneralUtils.getTimer().renderPartialTicks;
             final EntityPlayer player = (Freecam.freeEntity == null) ? mc.thePlayer : Freecam.freeEntity;
             final double deltaX = player.lastTickPosX + (player.posX - player.lastTickPosX) * renderPartialTicks - (entityPlayer.lastTickPosX + (entityPlayer.posX - entityPlayer.lastTickPosX) * renderPartialTicks);
             final double deltaY = player.lastTickPosY + (player.posY - player.lastTickPosY) * renderPartialTicks - (entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * renderPartialTicks);
@@ -144,10 +144,10 @@ public class Nametags extends Module {
             if (drawBackground.isToggled()) {
                 RenderUtils.drawRect(x1, y1, x2, y2, backGroundColor);
             }
-            if (Utils.isFriended(entityPlayer)) {
+            if (GeneralUtils.isFriended(entityPlayer)) {
                 RenderUtils.drawOutline(x1, y1, x2, y2, 2, friendColor);
             }
-            else if (Utils.isEnemy(entityPlayer)) {
+            else if (GeneralUtils.isEnemy(entityPlayer)) {
                 RenderUtils.drawOutline(x1, y1, x2, y2, 2, enemyColor);
             }
             mc.fontRendererObj.drawString(name, -strWidth, -9, -1, dropShadow.isToggled());
@@ -162,7 +162,7 @@ public class Nametags extends Module {
 
     @EventTarget
     public void onRenderWorld(Render3DEvent renderWorldLastEvent) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
         updatePositions();
@@ -184,7 +184,7 @@ public class Nametags extends Module {
 
     private void updatePositions() {
         entityPositions.clear();
-        final float pTicks = Utils.getTimer().renderPartialTicks;
+        final float pTicks = GeneralUtils.getTimer().renderPartialTicks;
         for (EntityPlayer entityPlayer : mc.theWorld.playerEntities) {
             if (!showInvis.isToggled() && entityPlayer.isInvisible()) {
                 continue;

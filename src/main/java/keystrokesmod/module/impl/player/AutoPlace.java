@@ -2,12 +2,12 @@ package keystrokesmod.module.impl.player;
 
 import keystrokesmod.event.Render3DEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.ModuleManager;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.ReflectHelper;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.manager.ModuleManager;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.ReflectUtil;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.lenni0451.asmevents.event.enums.EnumEventPriority;
 import net.minecraft.block.Block;
@@ -35,7 +35,7 @@ public class AutoPlace extends Module {
     private BlockPos lp = null;
 
     public AutoPlace() {
-        super("AutoPlace", Module.category.player, 0);
+        super("AutoPlace", Category.player, 0);
         this.registerSetting(new DescriptionSetting("Best with safewalk."));
         this.registerSetting(frameDelay = new SliderSetting("Frame delay", 8.0D, 0.0D, 30.0D, 1.0D));
         this.registerSetting(minPlaceDelay = new SliderSetting("Min place delay", 60.0, 25.0, 500.0, 5.0));
@@ -81,7 +81,7 @@ public class AutoPlace extends Module {
 
     @EventTarget(priority = EnumEventPriority.HIGHEST)
     public void bh(Render3DEvent ev) {
-        if (Utils.nullCheck()) {
+        if (GeneralUtils.nullCheck()) {
             if (mc.currentScreen == null && !mc.thePlayer.capabilities.isFlying) {
                 ItemStack i = mc.thePlayer.getHeldItem();
                 if (i != null && i.getItem() instanceof ItemBlock) {
@@ -103,10 +103,10 @@ public class AutoPlace extends Module {
                                         if (n - this.l >= minPlaceDelay.getInput()) {
                                             this.l = n;
                                             if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, i, pos, m.sideHit, m.hitVec)) {
-                                                ReflectHelper.setButton(1, true);
+                                                ReflectUtil.setButton(1, true);
                                                 mc.thePlayer.swingItem();
                                                 mc.getItemRenderer().resetEquippedProgress();
-                                                ReflectHelper.setButton(1, false);
+                                                ReflectUtil.setButton(1, false);
                                                 this.lp = pos;
                                                 this.f = 0;
                                             }
@@ -124,10 +124,10 @@ public class AutoPlace extends Module {
 
     private void rd(int i) {
         try {
-            if (ReflectHelper.rightClickDelayTimerField != null) {
-                ReflectHelper.rightClickDelayTimerField.set(mc, i);
+            if (ReflectUtil.rightClickDelayTimerField != null) {
+                ReflectUtil.rightClickDelayTimerField.set(mc, i);
             }
-        } catch (IllegalAccessException | IndexOutOfBoundsException var3) {
+        } catch (IllegalAccessException | IndexOutOfBoundsException ignored) {
         }
     }
 

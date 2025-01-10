@@ -1,11 +1,11 @@
 package keystrokesmod.module.impl.player;
 
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.ReflectHelper;
-import keystrokesmod.utility.RotationUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.ReflectUtil;
+import keystrokesmod.util.RotationUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.settings.KeyBinding;
 
@@ -26,7 +26,7 @@ public class AntiAFK extends Module {
     private boolean c;
     public boolean stop = false;
     public AntiAFK() {
-        super("AntiAFK", category.player);
+        super("AntiAFK", Category.player);
         this.registerSetting(afk = new SliderSetting("AFK", afkModes, 0));
         this.registerSetting(jump = new ButtonSetting("Jump", false));
         this.registerSetting(jumpWhenCollided = new ButtonSetting("Jump only when collided", false));
@@ -41,7 +41,7 @@ public class AntiAFK extends Module {
 
     public void onEnable() {
         this.ticks = this.h();
-        this.c = Utils.getRandom().nextBoolean();
+        this.c = GeneralUtils.getRandom().nextBoolean();
     }
 
     public void onUpdate() {
@@ -55,12 +55,12 @@ public class AntiAFK extends Module {
         switch ((int) afk.getInput()) {
             case 1: {
                 if (this.c) {
-                    KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.getKeyCode(), Utils.getRandom().nextBoolean());
-                    KeyBinding.setKeyBindState(mc.gameSettings.keyBindRight.getKeyCode(), Utils.getRandom().nextBoolean());
+                    KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.getKeyCode(), GeneralUtils.getRandom().nextBoolean());
+                    KeyBinding.setKeyBindState(mc.gameSettings.keyBindRight.getKeyCode(), GeneralUtils.getRandom().nextBoolean());
                     break;
                 }
-                KeyBinding.setKeyBindState(mc.gameSettings.keyBindBack.getKeyCode(), Utils.getRandom().nextBoolean());
-                KeyBinding.setKeyBindState(mc.gameSettings.keyBindLeft.getKeyCode(), Utils.getRandom().nextBoolean());
+                KeyBinding.setKeyBindState(mc.gameSettings.keyBindBack.getKeyCode(), GeneralUtils.getRandom().nextBoolean());
+                KeyBinding.setKeyBindState(mc.gameSettings.keyBindLeft.getKeyCode(), GeneralUtils.getRandom().nextBoolean());
                 break;
             }
             case 2: {
@@ -79,17 +79,17 @@ public class AntiAFK extends Module {
         }
         switch ((int) spin.getInput()) {
             case 1: {
-                mc.thePlayer.rotationYaw += this.c(this.c);
+                mc.thePlayer.rotationYaw += (float) this.c(this.c);
                 this.d();
                 break;
             }
             case 2: {
-                mc.thePlayer.rotationYaw += this.c(true);
+                mc.thePlayer.rotationYaw += (float) this.c(true);
                 this.d();
                 break;
             }
             case 3: {
-                mc.thePlayer.rotationYaw += this.c(false);
+                mc.thePlayer.rotationYaw += (float) this.c(false);
                 this.d();
                 break;
             }
@@ -99,10 +99,10 @@ public class AntiAFK extends Module {
         }
         if (this.ticks == 0) {
             if (swapItem.isToggled()) {
-                mc.thePlayer.inventory.currentItem = Utils.randomizeInt(0, 8);
+                mc.thePlayer.inventory.currentItem = GeneralUtils.randomizeInt(0, 8);
             }
             if (randomClicks.isToggled()) {
-                ReflectHelper.clickMouse();
+                ReflectUtil.clickMouse();
             }
             this.ticks = this.h();
             this.c = !this.c;
@@ -110,13 +110,13 @@ public class AntiAFK extends Module {
     }
 
     private double a() {
-        final int n = Utils.getRandom().nextBoolean() ? 1 : -1;
+        final int n = GeneralUtils.getRandom().nextBoolean() ? 1 : -1;
         if (!randomizeDelta.isToggled()) {
             return 2 * n;
         }
-        double n2 = Utils.randomizeInt(100, 500) / 100.0;
+        double n2 = GeneralUtils.randomizeInt(100, 500) / 100.0;
         if (n2 % 1.0 == 0.0) {
-            n2 += Utils.randomizeInt(1, 10) / 10.0 * n;
+            n2 += GeneralUtils.randomizeInt(1, 10) / 10.0 * n;
         }
         return n2 * n;
     }
@@ -155,7 +155,7 @@ public class AntiAFK extends Module {
         if (minDelay.getInput() == maxDelay.getInput()) {
             return (int)minDelay.getInput();
         }
-        return Utils.randomizeInt((int)minDelay.getInput(), (int) maxDelay.getInput());
+        return GeneralUtils.randomizeInt((int)minDelay.getInput(), (int) maxDelay.getInput());
     }
 
     private void d() {
@@ -169,9 +169,9 @@ public class AntiAFK extends Module {
         if (!randomizeDelta.isToggled()) {
             return 3 * n;
         }
-        double n2 = Utils.randomizeInt(100, 1000) / 100.0;
+        double n2 = GeneralUtils.randomizeInt(100, 1000) / 100.0;
         if (n2 % 1.0 == 0.0) {
-            n2 += Utils.randomizeInt(1, 10) / 10.0 * n;
+            n2 += GeneralUtils.randomizeInt(1, 10) / 10.0 * n;
         }
         return n2 * n;
     }

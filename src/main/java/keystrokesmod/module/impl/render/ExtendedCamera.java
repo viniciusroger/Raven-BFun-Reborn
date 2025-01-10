@@ -1,10 +1,10 @@
 package keystrokesmod.module.impl.render;
 
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.ReflectHelper;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.ReflectUtil;
+import keystrokesmod.util.GeneralUtils;
 
 public class ExtendedCamera extends Module {
 
@@ -12,7 +12,7 @@ public class ExtendedCamera extends Module {
 	private float lastDistance;
 
 	public ExtendedCamera() {
-		super("Camera Distance", category.render, 0);
+		super("Camera Distance", Category.render, 0);
 
 		this.registerSetting(new DescriptionSetting("Default distance is 4."));
 		this.registerSetting(thirdPersonDistance = new SliderSetting("Third person distance", 4, 0, 40, 1));
@@ -28,10 +28,8 @@ public class ExtendedCamera extends Module {
 			if (lastDistance != input) {
 				setThirdPersonDistance(lastDistance = input);
 			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			Utils.sendMessage("&cThere was an issue setting third person distance.");
+		} catch (Exception e) {
+			GeneralUtils.sendMessage("&cThere was an issue setting third person distance.");
 		}
 	}
 
@@ -41,11 +39,10 @@ public class ExtendedCamera extends Module {
 
 	private void setThirdPersonDistance(float distance) {
 		try {
-			ReflectHelper.thirdPersonDistance.set(mc.entityRenderer, distance);
-		}
-		catch (Exception e) {
+			ReflectUtil.thirdPersonDistance.set(mc.entityRenderer, distance);
+		} catch (Exception e) {
 			e.printStackTrace();
-			Utils.sendMessage("&cThere was an issue setting third person distance.");
+			GeneralUtils.sendMessage("&cThere was an issue setting third person distance.");
 		}
 	}
 }

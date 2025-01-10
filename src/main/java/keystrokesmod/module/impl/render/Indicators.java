@@ -3,11 +3,11 @@ package keystrokesmod.module.impl.render;
 import keystrokesmod.event.JoinWorldEvent;
 import keystrokesmod.event.Render2DEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.ReflectHelper;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.ReflectUtil;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
@@ -41,7 +41,7 @@ public class Indicators extends Module {
     private int fireBallColor = new Color(255, 109, 0).getRGB();
 
     public Indicators() {
-        super("Indicators", category.render);
+        super("Indicators", Category.render);
         this.registerSetting(renderArrows = new ButtonSetting("Render arrows", true));
         this.registerSetting(renderPearls = new ButtonSetting("Render ender pearls", true));
         this.registerSetting(renderFireballs = new ButtonSetting("Render fireballs", true));
@@ -59,7 +59,7 @@ public class Indicators extends Module {
 
     @EventTarget
     public void onRenderTick(Render2DEvent event) {
-        if (mc.currentScreen != null || !Utils.nullCheck()) {
+        if (mc.currentScreen != null || !GeneralUtils.nullCheck()) {
             return;
         }
         if (threats.isEmpty()) {
@@ -69,11 +69,11 @@ public class Indicators extends Module {
             Iterator<Entity> iterator = threats.iterator();
             while (iterator.hasNext()) {
                 Entity e = iterator.next();
-                if (e == null || !mc.theWorld.loadedEntityList.contains(e) || !canRender(e) || (e instanceof EntityArrow && ReflectHelper.inGround.getBoolean(e))) {
+                if (e == null || !mc.theWorld.loadedEntityList.contains(e) || !canRender(e) || (e instanceof EntityArrow && ReflectUtil.inGround.getBoolean(e))) {
                     iterator.remove();
                     continue;
                 }
-                float yaw = Utils.getYaw(e) - mc.thePlayer.rotationYaw;
+                float yaw = GeneralUtils.getYaw(e) - mc.thePlayer.rotationYaw;
                 ScaledResolution sr = new ScaledResolution(mc);
                 float x = (float) sr.getScaledWidth() / 2;
                 float y = (float) sr.getScaledHeight() / 2;
@@ -111,7 +111,7 @@ public class Indicators extends Module {
                 GL11.glTranslated(x + position[0], y + position[1], 0.0);
                 String distanceStr = (int) mc.thePlayer.getDistanceToEntity(e) + "m";
                 float textWidth = mc.fontRendererObj.getStringWidth(distanceStr);
-                mc.fontRendererObj.drawStringWithShadow(distanceStr, -textWidth / 2, -mc.fontRendererObj.FONT_HEIGHT/2, -1);
+                mc.fontRendererObj.drawStringWithShadow(distanceStr, -textWidth / 2, (float) -mc.fontRendererObj.FONT_HEIGHT /2, -1);
                 GL11.glPopMatrix();
 
                 GL11.glPushMatrix();
@@ -128,7 +128,7 @@ public class Indicators extends Module {
 
     @EventTarget
     public void onEntityJoin(JoinWorldEvent e) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
         if (e.getEntity() == mc.thePlayer) {
@@ -140,7 +140,7 @@ public class Indicators extends Module {
 
     private boolean canRender(Entity entity) {
         try {
-            if (entity instanceof EntityArrow && !ReflectHelper.inGround.getBoolean(entity) && renderArrows.isToggled()) {
+            if (entity instanceof EntityArrow && !ReflectUtil.inGround.getBoolean(entity) && renderArrows.isToggled()) {
                 return true;
             }
             else if (entity instanceof EntityFireball && renderFireballs.isToggled()) {
@@ -154,7 +154,7 @@ public class Indicators extends Module {
             }
         }
         catch (IllegalAccessException e) {
-            Utils.sendMessage("&cIssue checking entity.");
+            GeneralUtils.sendMessage("&cIssue checking entity.");
             e.printStackTrace();
             return false;
         }

@@ -2,9 +2,9 @@ package keystrokesmod.module.impl.client;
 
 import keystrokesmod.Raven;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
@@ -32,7 +32,7 @@ public class Settings extends Module {
     public static List<ResourceLocation> loadedCapes = new ArrayList<>();
 
     public Settings() {
-        super("Settings", category.client, 0);
+        super("Settings", Category.client, 0);
         this.registerSetting(new DescriptionSetting("General"));
         this.registerSetting(customCapes = new SliderSetting("Custom cape", capes, 0));
         this.registerSetting(weaponAxe = new ButtonSetting("Set axe as weapon", false));

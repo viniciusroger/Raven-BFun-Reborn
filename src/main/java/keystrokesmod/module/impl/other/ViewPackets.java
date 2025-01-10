@@ -4,8 +4,8 @@ import keystrokesmod.event.ReceivePacketEvent;
 import keystrokesmod.event.SendPacketEvent;
 import keystrokesmod.event.TickEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.lenni0451.asmevents.event.enums.EnumEventType;
 import net.minecraft.entity.Entity;
@@ -27,7 +27,7 @@ public class ViewPackets extends Module {
     private long tick;
 
     public ViewPackets() {
-        super("View Packets", category.other);
+        super("View Packets", Category.other);
         this.registerSetting(includeCancelled = new ButtonSetting("Include cancelled", true));
         this.registerSetting(singlePlayer = new ButtonSetting("Singleplayer", false));
         this.registerSetting(sent = new ButtonSetting("Sent", false));
@@ -48,15 +48,15 @@ public class ViewPackets extends Module {
     }
 
     private void sendMessage(final Packet packet, final boolean b) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
         final String s = b ? ("&a" + packet.getClass().getSimpleName()) : applyInfo(packet);
         final String string = ((compactC03.isToggled() && packet instanceof C03PacketPlayer) ? "&6" : "&d") + packet.getClass().getSimpleName();
-        final ChatComponentText chatComponentText = new ChatComponentText(Utils.formatColor("&7[&dR&7]&r &7" + (b ? "Received" : "Sent") + " packet (t:&b" + tick + "&7): "));
+        final ChatComponentText chatComponentText = new ChatComponentText(GeneralUtils.formatColor("&7[&dR&7]&r &7" + (b ? "Received" : "Sent") + " packet (t:&b" + tick + "&7): "));
         final ChatStyle chatStyle = new ChatStyle();
-        chatStyle.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(Utils.formatColor(s))));
-        ((IChatComponent)chatComponentText).appendSibling(new ChatComponentText(Utils.formatColor(string)).setChatStyle(chatStyle));
+        chatStyle.setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(GeneralUtils.formatColor(s))));
+        ((IChatComponent)chatComponentText).appendSibling(new ChatComponentText(GeneralUtils.formatColor(string)).setChatStyle(chatStyle));
         mc.thePlayer.addChatMessage(chatComponentText);
     }
 
@@ -160,7 +160,7 @@ public class ViewPackets extends Module {
     }
 
     private static double round(final double n) {
-        return Utils.rnd(n, 3);
+        return GeneralUtils.rnd(n, 3);
     }
 
     @EventTarget

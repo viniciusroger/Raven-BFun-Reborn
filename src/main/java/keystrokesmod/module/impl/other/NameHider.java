@@ -1,9 +1,9 @@
 package keystrokesmod.module.impl.other;
 
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.util.GeneralUtils;
 import net.minecraft.client.network.NetworkPlayerInfo;
 
 public class NameHider extends Module {
@@ -12,15 +12,15 @@ public class NameHider extends Module {
     public static ButtonSetting hideAllNames;
 
     public NameHider() {
-        super("Name Hider", Module.category.other);
-        this.registerSetting(a = new DescriptionSetting(Utils.uf("command") + ": cname [name]"));
+        super("Name Hider", Category.other);
+        this.registerSetting(a = new DescriptionSetting(GeneralUtils.uf("command") + ": cname [name]"));
         this.registerSetting(hideAllNames = new ButtonSetting("Hide all names", false));
     }
 
     public static String getFakeName(String s) {
         if (mc.thePlayer != null) {
             if (hideAllNames.isToggled()) {
-                s = s.replace(Utils.getServerName(), "You");
+                s = s.replace(GeneralUtils.getServerName(), "You");
                 NetworkPlayerInfo getPlayerInfo = mc.getNetHandler().getPlayerInfo(mc.thePlayer.getUniqueID());
                 for (NetworkPlayerInfo networkPlayerInfo : mc.getNetHandler().getPlayerInfoMap()) {
                     if (networkPlayerInfo.equals(getPlayerInfo)) {
@@ -30,7 +30,7 @@ public class NameHider extends Module {
                 }
             }
             else {
-                s = s.replace(Utils.getServerName(), n);
+                s = s.replace(GeneralUtils.getServerName(), n);
             }
         }
         return s;

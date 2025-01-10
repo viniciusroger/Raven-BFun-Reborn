@@ -2,10 +2,10 @@ package keystrokesmod.module.impl.player;
 
 import keystrokesmod.event.TickEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.ModuleManager;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.manager.ModuleManager;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.lenni0451.asmevents.event.enums.EnumEventType;
 import net.minecraft.client.settings.KeyBinding;
@@ -22,7 +22,7 @@ public class SafeWalk extends Module {
     private long b = 0L;
 
     public SafeWalk() {
-        super("SafeWalk", Module.category.player, 0);
+        super("SafeWalk", Category.player, 0);
         this.registerSetting(shiftDelay = new SliderSetting("Delay until next shift", 0.0, 0.0, 800.0, 10.0));
         this.registerSetting(motion = new SliderSetting("Motion", 1.0, 0.5, 1.2, 0.01));
         this.registerSetting(blocksOnly = new ButtonSetting("Blocks only", true));
@@ -33,15 +33,15 @@ public class SafeWalk extends Module {
     }
 
     public void onDisable() {
-        if (shift.isToggled() && Utils.overAir()) {
+        if (shift.isToggled() && GeneralUtils.overAir()) {
             this.setSneakState(false);
         }
         isSneaking = false;
     }
 
     public void onUpdate() {
-        if (motion.getInput() != 1.0 && mc.thePlayer.onGround && Utils.isMoving() && (!pitchCheck.isToggled() || mc.thePlayer.rotationPitch >= 70.0f)) {
-            Utils.setSpeed(Utils.getHorizontalSpeed() * motion.getInput());
+        if (motion.getInput() != 1.0 && mc.thePlayer.onGround && GeneralUtils.isMoving() && (!pitchCheck.isToggled() || mc.thePlayer.rotationPitch >= 70.0f)) {
+            GeneralUtils.setSpeed(GeneralUtils.getHorizontalSpeed() * motion.getInput());
         }
     }
 
@@ -50,10 +50,10 @@ public class SafeWalk extends Module {
         if (e.getType() == EnumEventType.PRE) {
             return;
         }
-        if (!shift.isToggled() || !Utils.nullCheck()) {
+        if (!shift.isToggled() || !GeneralUtils.nullCheck()) {
             return;
         }
-        if (mc.thePlayer.onGround && Utils.overAir()) {
+        if (mc.thePlayer.onGround && GeneralUtils.overAir()) {
             if (blocksOnly.isToggled()) {
                 final ItemStack getHeldItem = mc.thePlayer.getHeldItem();
                 if (getHeldItem == null || !(getHeldItem.getItem() instanceof ItemBlock)) {
@@ -80,7 +80,7 @@ public class SafeWalk extends Module {
 
     @EventTarget
     public void onGuiOpen(TickEvent event) {
-        if (shift.isToggled() && Utils.nullCheck() && mc.currentScreen != null) {
+        if (shift.isToggled() && GeneralUtils.nullCheck() && mc.currentScreen != null) {
             this.isSneaking = mc.thePlayer.isSneaking();
         }
     }
@@ -99,7 +99,7 @@ public class SafeWalk extends Module {
         if (down) {
             final long n = (long) shiftDelay.getInput();
             if (n != 0L) {
-                if (Utils.getDifference(this.b, System.currentTimeMillis()) < n) {
+                if (GeneralUtils.getDifference(this.b, System.currentTimeMillis()) < n) {
                     return;
                 }
                 this.b = System.currentTimeMillis();
@@ -124,11 +124,8 @@ public class SafeWalk extends Module {
             if (pitchCheck.isToggled() && mc.thePlayer.rotationPitch < 70) {
                 return false;
             }
-            if (blocksOnly.isToggled() && (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock))) {
-                return false;
-            }
-            return true;
-        }
+			return !blocksOnly.isToggled() || (mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock);
+		}
         return false;
     }
 }

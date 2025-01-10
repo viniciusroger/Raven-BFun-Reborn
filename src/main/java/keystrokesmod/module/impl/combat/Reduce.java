@@ -1,8 +1,8 @@
 package keystrokesmod.module.impl.combat;
 
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
 import net.minecraft.entity.Entity;
 
 public class Reduce extends Module {
@@ -10,7 +10,7 @@ public class Reduce extends Module {
     private static SliderSetting reduction;
 
     public Reduce() {
-        super("Reduce", category.combat);
+        super("Reduce", Category.combat);
         this.registerSetting(new DescriptionSetting("Overrides KeepSprint."));
         this.registerSetting(reduction = new SliderSetting("Attack reduction %", 60.0, 60.0, 100.0, 0.5));
         this.registerSetting(chance = new SliderSetting("Chance", 100.0, 0.0, 100.0, 1.0, "%"));

@@ -3,11 +3,11 @@ package keystrokesmod.module.impl.render;
 import keystrokesmod.event.JoinWorldEvent;
 import keystrokesmod.event.Render3DEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.BlockUtils;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.BlockUtils;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -34,7 +34,7 @@ public class Xray extends Module {
     private long lastCheck = 0;
 
     public Xray() {
-        super("Xray", category.render);
+        super("Xray", Category.render);
         this.registerSetting(range = new SliderSetting("Range", 20, 5, 50, 1));
         this.registerSetting(rate = new SliderSetting("Rate", 0.5, 0.1, 3.0, 0.1, " second"));
         this.registerSetting(coal = new ButtonSetting("Coal", true));
@@ -83,18 +83,18 @@ public class Xray extends Module {
 
     @EventTarget
     public void onRenderWorld(Render3DEvent ev) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
         if (!this.blocks.isEmpty()) {
-            Iterator iterator = blocks.iterator();
-            while (iterator.hasNext()) {
-                BlockPos blockPos = (BlockPos) iterator.next();
+            for (BlockPos blockPos : blocks) {
                 Block block = BlockUtils.getBlock(blockPos);
+
                 if (block == null || !canBreak(block)) {
-                    iterator.remove();
+                    blocks.remove(blockPos);
                     continue;
                 }
+
                 this.drawBox(blockPos);
             }
         }

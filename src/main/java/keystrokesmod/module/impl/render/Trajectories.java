@@ -3,9 +3,9 @@ package keystrokesmod.module.impl.render;
 import keystrokesmod.event.Render3DEvent;
 import keystrokesmod.module.Module;
 import keystrokesmod.module.impl.world.AntiBot;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -22,7 +22,7 @@ public class Trajectories extends Module {
     private ButtonSetting highlightOnEntity;
     private int highlightColor = new Color(234, 38, 38).getRGB();
     public Trajectories() {
-        super("Trajectories", category.render);
+        super("Trajectories", Category.render);
         this.registerSetting(autoScale = new ButtonSetting("Auto-scale", true));
         this.registerSetting(disableUncharged = new ButtonSetting("Disable uncharged bow", true));
         this.registerSetting(highlightOnEntity = new ButtonSetting("Highlight on entity", true));
@@ -30,7 +30,7 @@ public class Trajectories extends Module {
 
     @EventTarget
     public void onRenderWorldLast(Render3DEvent e) {
-        if (!Utils.nullCheck() || mc.thePlayer.getHeldItem() == null) {
+        if (!GeneralUtils.nullCheck() || mc.thePlayer.getHeldItem() == null) {
             return;
         }
         ItemStack heldItem = mc.thePlayer.getHeldItem();
@@ -40,12 +40,9 @@ public class Trajectories extends Module {
         if (heldItem.getItem() instanceof ItemBow && !mc.thePlayer.isUsingItem() && disableUncharged.isToggled()) {
             return;
         }
-        boolean bow = false;
-        if (heldItem.getItem() instanceof ItemBow) {
-            bow = true;
-        }
+        boolean bow = heldItem.getItem() instanceof ItemBow;
 
-        float playerYaw = mc.thePlayer.rotationYaw;
+		float playerYaw = mc.thePlayer.rotationYaw;
         float playerPitch = mc.thePlayer.rotationPitch;
 
         double posX = mc.getRenderManager().viewerPosX - (double)(MathHelper.cos(playerYaw / 180.0f * (float)Math.PI) * 0.16f);
@@ -96,7 +93,7 @@ public class Trajectories extends Module {
         MovingObjectPosition target = null;
         boolean highlight = false;
         double[] transform = new double[]{posX, posY, posZ, motionX, motionY, motionZ};
-        for (int k = 0; k <= 100 && !ground; ++k) {
+        for (int k = 0; k <= 100; ++k) {
             Vec3 start = new Vec3(transform[0], transform[1], transform[2]);
             Vec3 predicted = new Vec3(transform[0] + transform[3], transform[1] + transform[4], transform[2] + transform[5]);
             MovingObjectPosition rayTraced = mc.theWorld.rayTraceBlocks(start, predicted, false, true, false);

@@ -3,12 +3,12 @@ package keystrokesmod.module.impl.other;
 import keystrokesmod.event.JoinWorldEvent;
 import keystrokesmod.module.Module;
 import keystrokesmod.module.impl.world.AntiBot;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.BlockUtils;
-import keystrokesmod.utility.PlayerData;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.BlockUtils;
+import keystrokesmod.misc.PlayerData;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.block.BlockAir;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,7 +38,7 @@ public class Anticheat extends Module {
     private HashMap<UUID, PlayerData> players = new HashMap<>();
     private long lastAlert;
     public Anticheat() {
-        super("Anticheat", category.other);
+        super("Anticheat", Category.other);
         this.registerSetting(new DescriptionSetting("Tries to detect cheaters."));
         this.registerSetting(interval = new SliderSetting("Flag interval", 20.0, 0.0, 60.0, 1.0, " second"));
         this.registerSetting(enemyAdd = new ButtonSetting("Add cheaters as enemy", false));
@@ -55,7 +55,7 @@ public class Anticheat extends Module {
     }
 
     private void alert(final EntityPlayer entityPlayer, ButtonSetting mode) {
-        if (Utils.isFriended(entityPlayer) || (ignoreTeammates.isToggled() && Utils.isTeamMate(entityPlayer))) {
+        if (GeneralUtils.isFriended(entityPlayer) || (ignoreTeammates.isToggled() && GeneralUtils.isTeamMate(entityPlayer))) {
             return;
         }
         if (atlasSuspect.isToggled()) {
@@ -64,7 +64,7 @@ public class Anticheat extends Module {
             }
         }
         else if (enemyAdd.isToggled()) {
-            Utils.addEnemy(entityPlayer.getName());
+            GeneralUtils.addEnemy(entityPlayer.getName());
         }
         final long currentTimeMillis = System.currentTimeMillis();
         if (interval.getInput() > 0.0) {
@@ -74,24 +74,24 @@ public class Anticheat extends Module {
             }
             else {
                 final Long n = hashMap.get(mode);
-                if (n != null && Utils.getDifference(n, currentTimeMillis) <= interval.getInput() * 1000.0) {
+                if (n != null && GeneralUtils.getDifference(n, currentTimeMillis) <= interval.getInput() * 1000.0) {
                     return;
                 }
             }
             hashMap.put(mode, currentTimeMillis);
             flags.put(entityPlayer.getUniqueID(), hashMap);
         }
-        final ChatComponentText chatComponentText = new ChatComponentText(Utils.formatColor("&7[&dR&7]&r " + entityPlayer.getDisplayName().getUnformattedText() + " &7detected for &d" + mode.getName()));
+        final ChatComponentText chatComponentText = new ChatComponentText(GeneralUtils.formatColor("&7[&dR&7]&r " + entityPlayer.getDisplayName().getUnformattedText() + " &7detected for &d" + mode.getName()));
         final ChatStyle chatStyle = new ChatStyle();
         chatStyle.setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/wdr " + entityPlayer.getName()));
-        ((IChatComponent)chatComponentText).appendSibling(new ChatComponentText(Utils.formatColor(" §7[§cWDR§7]")).setChatStyle(chatStyle));
+        ((IChatComponent)chatComponentText).appendSibling(new ChatComponentText(GeneralUtils.formatColor(" §7[§cWDR§7]")).setChatStyle(chatStyle));
         mc.thePlayer.addChatMessage(chatComponentText);
-        if (shouldPing.isToggled() && Utils.getDifference(lastAlert, currentTimeMillis) >= 1500L) {
+        if (shouldPing.isToggled() && GeneralUtils.getDifference(lastAlert, currentTimeMillis) >= 1500L) {
             mc.thePlayer.playSound("note.pling", 1.0f, 1.0f);
             lastAlert = currentTimeMillis;
         }
-        if (autoReport.isToggled() && !Utils.isFriended(entityPlayer)) {
-            mc.thePlayer.sendChatMessage("/wdr " + Utils.stripColor(entityPlayer.getGameProfile().getName()));
+        if (autoReport.isToggled() && !GeneralUtils.isFriended(entityPlayer)) {
+            mc.thePlayer.sendChatMessage("/wdr " + GeneralUtils.stripColor(entityPlayer.getGameProfile().getName()));
         }
     }
 
@@ -171,7 +171,7 @@ public class Anticheat extends Module {
             double deltaY = playerData.serverPosY - serverPosY;
             double deltaZ = Math.abs(playerData.serverPosZ - serverPosZ);
             if (deltaY >= 5 && deltaX <= 10 && deltaZ <= 10 && deltaY <= 40) {
-                if (!Utils.overVoid(serverPosX, serverPosY, serverPosZ) && Utils.getFallDistance(entityPlayer) > 3) {
+                if (!GeneralUtils.overVoid(serverPosX, serverPosY, serverPosZ) && GeneralUtils.getFallDistance(entityPlayer) > 3) {
                     alert(entityPlayer, noFall);
                 }
             }

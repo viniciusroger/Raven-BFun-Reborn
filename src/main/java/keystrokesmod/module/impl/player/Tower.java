@@ -2,18 +2,16 @@ package keystrokesmod.module.impl.player;
 
 import keystrokesmod.event.PreMotionEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.ModuleManager;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.manager.ModuleManager;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import org.lwjgl.input.Keyboard;
 
 public class Tower extends Module {
     private SliderSetting mode;
-    private SliderSetting speed;
-    private SliderSetting diagonalSpeed;
     private SliderSetting slowedSpeed;
     private SliderSetting slowedTicks;
     private ButtonSetting disableWhileCollided;
@@ -24,11 +22,9 @@ public class Tower extends Module {
     private boolean wasTowering;
     private int offGroundTicks;
     public Tower() {
-        super("Tower", category.player);
+        super("Tower", Category.player);
         this.registerSetting(new DescriptionSetting("Works with Safewalk & Scaffold"));
         this.registerSetting(mode = new SliderSetting("Mode", modes, 0));
-        this.registerSetting(speed = new SliderSetting("Speed", 5, 0.5, 9, 0.1));
-        this.registerSetting(diagonalSpeed = new SliderSetting("Diagonal speed", 5, 0, 10, 0.1));
         this.registerSetting(slowedSpeed = new SliderSetting("Slowed speed", 2, 0, 9, 0.1));
         this.registerSetting(slowedTicks = new SliderSetting("Slowed ticks", 1, 0, 20, 1));
         this.registerSetting(disableWhileCollided = new ButtonSetting("Disable while collided", false));
@@ -65,7 +61,7 @@ public class Tower extends Module {
         else {
             if (wasTowering && slowedTicks.getInput() > 0 && modulesEnabled()) {
                 if (slowTicks++ < slowedTicks.getInput()) {
-                    Utils.setSpeed(Math.max(slowedSpeed.getInput() * 0.1 - 0.25, 0));
+                    GeneralUtils.setSpeed(Math.max(slowedSpeed.getInput() * 0.1 - 0.25, 0));
                 }
                 else {
                     slowTicks = 0;
@@ -87,7 +83,7 @@ public class Tower extends Module {
     }
 
     private boolean canTower() {
-        if (!Utils.nullCheck() || !Utils.jumpDown()) {
+        if (!GeneralUtils.nullCheck() || !GeneralUtils.jumpDown()) {
             return false;
         }
         else if (disableWhileHurt.isToggled() && mc.thePlayer.hurtTime >= 9) {
@@ -107,6 +103,6 @@ public class Tower extends Module {
     }
 
     public boolean canSprint() {
-        return canTower() && this.sprintJumpForward.isToggled() && Keyboard.isKeyDown(mc.gameSettings.keyBindForward.getKeyCode()) && Utils.jumpDown();
+        return canTower() && this.sprintJumpForward.isToggled() && Keyboard.isKeyDown(mc.gameSettings.keyBindForward.getKeyCode()) && GeneralUtils.jumpDown();
     }
 }

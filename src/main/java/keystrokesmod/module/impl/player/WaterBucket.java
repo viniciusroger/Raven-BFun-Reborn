@@ -2,9 +2,9 @@ package keystrokesmod.module.impl.player;
 
 import keystrokesmod.event.PreMotionEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.utility.RotationUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.util.RotationUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
@@ -18,7 +18,7 @@ public class WaterBucket extends Module {
     private ButtonSetting switchToItem;
 
     public WaterBucket() {
-        super("Water bucket", category.player, 0);
+        super("Water bucket", Category.player, 0);
         this.registerSetting(silentAim = new ButtonSetting("Silent aim", true));
         this.registerSetting(switchToItem = new ButtonSetting("Switch to item", true));
     }
@@ -65,6 +65,6 @@ public class WaterBucket extends Module {
     }
 
     private int fallDistance() {
-        return (int) Utils.getFallDistance(mc.thePlayer);
+        return (int) GeneralUtils.getFallDistance(mc.thePlayer);
     }
 }

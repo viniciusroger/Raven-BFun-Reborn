@@ -1,11 +1,10 @@
 package keystrokesmod.module.impl.movement;
 
 import keystrokesmod.module.Module;
-import keystrokesmod.module.ModuleManager;
-import keystrokesmod.module.impl.combat.KillAura;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
+import keystrokesmod.manager.ModuleManager;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Vec3;
 
@@ -16,7 +15,7 @@ public class KeepSprint extends Module {
     public static ButtonSetting reduceReachHits;
 
     public KeepSprint() {
-        super("KeepSprint", Module.category.movement, 0);
+        super("KeepSprint", Category.movement, 0);
         this.registerSetting(new DescriptionSetting("Default is 40% motion reduction."));
         this.registerSetting(slow = new SliderSetting("Slow %", 40.0D, 0.0D, 40.0D, 1.0D));
         this.registerSetting(disableWhileJump = new ButtonSetting("Disable while jumping", false));

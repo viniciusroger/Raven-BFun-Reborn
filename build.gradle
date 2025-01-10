@@ -35,7 +35,7 @@ minecraft {
 
     mappings = "stable_20"
     makeObfSourceJar = false
-    clientJvmArgs += '-Dfml.coreMods.load=keystrokesmod.mixins.MixinLoader'
+    clientJvmArgs += '-Dfml.coreMods.load=keystrokesmod.mixin.MixinLoader'
 }
 
 mixin {
@@ -104,7 +104,7 @@ jar {
                 'MixinConfigs': 'mixins.raven.json',
                 'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
                 'TweakOrder': 0,
-                "FMLCorePlugin": "keystrokesmod.mixins.MixinLoader",
+                "FMLCorePlugin": "keystrokesmod.mixin.MixinLoader",
                 "ForceLoadAsMod": true,
                 'FMLCorePluginContainsFMLMod': true,
                 "ModSide": "CLIENT"

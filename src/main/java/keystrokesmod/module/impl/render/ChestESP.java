@@ -2,10 +2,10 @@ package keystrokesmod.module.impl.render;
 
 import keystrokesmod.event.Render3DEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
@@ -18,7 +18,7 @@ public class ChestESP extends Module {
     private ButtonSetting rainbow, outline, shade, disableIfOpened;
 
     public ChestESP() {
-        super("ChestESP", Module.category.render, 0);
+        super("ChestESP", Category.render, 0);
         this.registerSetting(red = new SliderSetting("Red", 0.0D, 0.0D, 255.0D, 1.0D));
         this.registerSetting(green = new SliderSetting("Green", 0.0D, 0.0D, 255.0D, 1.0D));
         this.registerSetting(blue = new SliderSetting("Blue", 255.0D, 0.0D, 255.0D, 1.0D));
@@ -30,10 +30,10 @@ public class ChestESP extends Module {
 
     @EventTarget
     public void o(Render3DEvent ev) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
-        int rgb = rainbow.isToggled() ? Utils.getChroma(2L, 0L) : (new Color((int) red.getInput(), (int) green.getInput(), (int) blue.getInput())).getRGB();
+        int rgb = rainbow.isToggled() ? GeneralUtils.getChroma(2L, 0L) : (new Color((int) red.getInput(), (int) green.getInput(), (int) blue.getInput())).getRGB();
         for (TileEntity tileEntity : mc.theWorld.loadedTileEntityList) {
             if (tileEntity instanceof TileEntityChest) {
                 if (disableIfOpened.isToggled() && ((TileEntityChest) tileEntity).lidAngle > 0.0f) {

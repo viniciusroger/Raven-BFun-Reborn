@@ -3,12 +3,12 @@ package keystrokesmod.module.impl.render;
 import keystrokesmod.event.JoinWorldEvent;
 import keystrokesmod.event.Render3DEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.BlockUtils;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Theme;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.BlockUtils;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.enums.Theme;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.properties.IProperty;
@@ -34,7 +34,7 @@ public class BedESP extends Module {
     private long lastCheck = 0;
 
     public BedESP() {
-        super("BedESP", category.render);
+        super("BedESP", Category.render);
         this.registerSetting(theme = new SliderSetting("Theme", Theme.themes, 0));
         this.registerSetting(range = new SliderSetting("Range", 10.0, 2.0, 30.0, 2.0));
         this.registerSetting(rate = new SliderSetting("Rate", 0.4, 0.1, 3.0, 0.1, " second"));
@@ -62,11 +62,11 @@ public class BedESP extends Module {
                             this.bed = new BlockPos[]{blockPos, blockPos.offset((EnumFacing) getBlockState.getValue((IProperty) BlockBed.FACING))};
                             return;
                         } else {
-                            for (int l = 0; l < this.beds.size(); ++l) {
-                                if (BlockUtils.isSamePos(blockPos, ((BlockPos[]) this.beds.get(l))[0])) {
-                                    continue priorityLoop;
-                                }
-                            }
+							for (BlockPos[] pos : this.beds) {
+								if (BlockUtils.isSamePos(blockPos, ((BlockPos[]) pos)[0])) {
+									continue priorityLoop;
+								}
+							}
                             this.beds.add(new BlockPos[]{blockPos, blockPos.offset((EnumFacing) getBlockState.getValue((IProperty) BlockBed.FACING))});
                         }
                     }
@@ -85,7 +85,7 @@ public class BedESP extends Module {
 
     @EventTarget
     public void onRender3D(Render3DEvent e) {
-        if (Utils.nullCheck()) {
+        if (GeneralUtils.nullCheck()) {
             if (firstBed.isToggled() && this.bed != null) {
                 if (!(mc.theWorld.getBlockState(bed[0]).getBlock() instanceof BlockBed)) {
                     this.bed = null;

@@ -2,12 +2,12 @@ package keystrokesmod.module.impl.render;
 
 import keystrokesmod.event.Render3DEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.ModuleManager;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.BlockUtils;
-import keystrokesmod.utility.ReflectHelper;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.manager.ModuleManager;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.BlockUtils;
+import keystrokesmod.util.ReflectUtil;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.block.BlockBed;
 import net.minecraft.client.renderer.GlStateManager;
@@ -24,7 +24,7 @@ public class BreakProgress extends Module {
     private String progressStr;
 
     public BreakProgress() {
-        super("BreakProgress", category.render);
+        super("BreakProgress", Category.render);
         this.registerSetting(mode = new SliderSetting("Mode", modes, 0));
         this.registerSetting(manual = new ButtonSetting("Show manual", true));
         this.registerSetting(bedAura = new ButtonSetting("Show BedAura", true));
@@ -32,7 +32,7 @@ public class BreakProgress extends Module {
 
     @EventTarget
     public void onRenderWorld(Render3DEvent e) {
-        if (this.progress == 0.0f || this.block == null || !Utils.nullCheck()) {
+        if (this.progress == 0.0f || this.block == null || !GeneralUtils.nullCheck()) {
             return;
         }
         final double n = this.block.getX() + 0.5 - mc.getRenderManager().viewerPosX;
@@ -55,16 +55,16 @@ public class BreakProgress extends Module {
     private void setProgress() {
         switch ((int) mode.getInput()) {
             case 0: {
-                this.progressStr = (int) (100.0 * (this.progress / 1.0)) + "%";
+                this.progressStr = (int) (100.0 * this.progress) + "%";
                 break;
             }
             case 1: {
-                double timeLeft = Utils.rnd((double) ((1.0f - this.progress) / BlockUtils.getBlockHardness(BlockUtils.getBlock(this.block), mc.thePlayer.getHeldItem(), false, false)) / 20.0, 1);
+                double timeLeft = GeneralUtils.rnd((double) ((1.0f - this.progress) / BlockUtils.getBlockHardness(BlockUtils.getBlock(this.block), mc.thePlayer.getHeldItem(), false, false)) / 20.0, 1);
                 this.progressStr = timeLeft == 0 ? "0" : timeLeft + "s";
                 break;
             }
             case 2: {
-                this.progressStr = String.valueOf(Utils.rnd(this.progress, 2));
+                this.progressStr = String.valueOf(GeneralUtils.rnd(this.progress, 2));
                 break;
             }
         }
@@ -89,14 +89,14 @@ public class BreakProgress extends Module {
             return;
         }
         try {
-            this.progress = ReflectHelper.curBlockDamageMP.getFloat(mc.playerController);
+            this.progress = ReflectUtil.curBlockDamageMP.getFloat(mc.playerController);
             if (this.progress == 0.0f) {
                 this.resetVariables();
                 return;
             }
             this.block = mc.objectMouseOver.getBlockPos();
             this.setProgress();
-        } catch (IllegalAccessException ex) {
+        } catch (IllegalAccessException ignored) {
         }
     }
 

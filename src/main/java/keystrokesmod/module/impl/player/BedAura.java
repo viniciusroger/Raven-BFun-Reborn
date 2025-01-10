@@ -1,12 +1,13 @@
 package keystrokesmod.module.impl.player;
 
-import keystrokesmod.Raven;
 import keystrokesmod.event.*;
+import keystrokesmod.enums.Theme;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.ModuleManager;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.*;
+import keystrokesmod.manager.ModuleManager;
+import keystrokesmod.module.impl.render.HUD;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.*;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.lenni0451.asmevents.event.enums.EnumEventPriority;
 import net.minecraft.block.Block;
@@ -65,7 +66,7 @@ public class BedAura extends Module {
     private int defaultOutlineColor = new Color(226, 65, 65).getRGB();
 
     public BedAura() {
-        super("BedAura", category.player, 0);
+        super("BedAura", Category.player, 0);
         this.registerSetting(mode = new SliderSetting("Break mode", modes, 0));
         this.registerSetting(breakSpeed = new SliderSetting("Break speed", 1, 0.8, 2, 0.01, "x"));
         this.registerSetting(fov = new SliderSetting("FOV", 360.0, 30.0, 360.0, 4.0));
@@ -95,7 +96,7 @@ public class BedAura extends Module {
 
     @EventTarget(priority = EnumEventPriority.HIGHEST)
     public void onPreUpdate(PreUpdateEvent e) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
 
@@ -155,7 +156,7 @@ public class BedAura extends Module {
 
     @EventTarget
     public void onReceivePacket(ReceivePacketEvent e) {
-        if (!Utils.nullCheck() || !cancelKnockback.isToggled() || currentBlock == null) {
+        if (!GeneralUtils.nullCheck() || !cancelKnockback.isToggled() || currentBlock == null) {
             return;
         }
         if (e.getPacket() instanceof S12PacketEntityVelocity) {
@@ -191,14 +192,14 @@ public class BedAura extends Module {
 
     @EventTarget
     public void onRenderWorld(Render3DEvent event) {
-        if (!renderOutline.isToggled() || currentBlock == null || !Utils.nullCheck()) {
+        if (!renderOutline.isToggled() || currentBlock == null || !GeneralUtils.nullCheck()) {
             return;
         }
         if (ModuleManager.bedESP != null && ModuleManager.bedESP.isEnabled()) {
             outlineColor = Theme.getGradient((int) ModuleManager.bedESP.theme.getInput(), 0);
         }
         else if (ModuleManager.hud != null && ModuleManager.hud.isEnabled()) {
-            outlineColor = Theme.getGradient((int) ModuleManager.hud.theme.getInput(), 0);
+            outlineColor = Theme.getGradient((int) HUD.theme.getInput(), 0);
         }
         else {
             outlineColor = defaultOutlineColor;
@@ -231,7 +232,7 @@ public class BedAura extends Module {
                     final IBlockState getBlockState = mc.theWorld.getBlockState(blockPos);
                     if (getBlockState.getBlock() == Blocks.bed && getBlockState.getValue((IProperty) BlockBed.PART) == BlockBed.EnumPartType.FOOT) {
                         float fov = (float) this.fov.getInput();
-                        if (fov != 360 && !Utils.inFov(fov, blockPos)) {
+                        if (fov != 360 && !GeneralUtils.inFov(fov, blockPos)) {
                             continue priority;
                         }
                         return new BlockPos[]{blockPos, blockPos.offset((EnumFacing) getBlockState.getValue((IProperty) BlockBed.FACING))};
@@ -297,7 +298,7 @@ public class BedAura extends Module {
 
     private double getEfficiency(BlockPos pos) {
         Block block = BlockUtils.getBlock(pos);
-        ItemStack tool = (mode.getInput() == 2 && Utils.getTool(block) != -1) ? mc.thePlayer.inventory.getStackInSlot(Utils.getTool(block)) : mc.thePlayer.getHeldItem();
+        ItemStack tool = (mode.getInput() == 2 && GeneralUtils.getTool(block) != -1) ? mc.thePlayer.inventory.getStackInSlot(GeneralUtils.getTool(block)) : mc.thePlayer.getHeldItem();
         double efficiency = BlockUtils.getBlockHardness(block, tool, false, ignoreSlow.isToggled() || groundSpoof.isToggled());
 
         if (breakProgressMap.get(pos) != null) {
@@ -331,7 +332,7 @@ public class BedAura extends Module {
     }
 
     public void setPacketSlot(int slot) {
-        if (slot == currentSlot || slot == -1 || Raven.badPacketsHandler.playerSlot == slot) {
+        if (slot == currentSlot || slot == -1) {
             return;
         }
         mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(slot));
@@ -355,7 +356,7 @@ public class BedAura extends Module {
             return;
         }
         float fov = (float) this.fov.getInput();
-        if (fov != 360 && !Utils.inFov(fov, blockPos)) {
+        if (fov != 360 && !GeneralUtils.inFov(fov, blockPos)) {
             return;
         }
         if (!RotationUtils.inRange(blockPos, range.getInput())) {
@@ -379,26 +380,25 @@ public class BedAura extends Module {
                 stopAutoblock = true;
                 rotate = true;
                 if (mode.getInput() == 0) {
-                    setSlot(Utils.getTool(block));
+                    setSlot(GeneralUtils.getTool(block));
                 }
                 startBreak(blockPos);
             }
             else if (breakProgress >= 1) {
                 if (mode.getInput() == 2) {
                     ModuleManager.killAura.resetBlinkState(false);
-                    setPacketSlot(Utils.getTool(block));
+                    setPacketSlot(GeneralUtils.getTool(block));
                 }
                 stopBreak(blockPos);
                 reset(false);
                 stopAutoblock = true;
                 delayStart = true;
-                Iterator<Map.Entry<BlockPos, Float>> iterator = breakProgressMap.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<BlockPos, Float> entry = iterator.next();
-                    if (entry.getKey().equals(blockPos)) {
-                        iterator.remove();
-                    }
-                }
+
+                breakProgressMap.forEach((bpos, num) -> {
+                    if (bpos.equals(blockPos))
+                        breakProgressMap.remove(bpos);
+                });
+
                 if (!disableBreakEffects.isToggled()) {
                     mc.playerController.onPlayerDestroyBlock(blockPos, EnumFacing.UP);
                 }
@@ -410,12 +410,12 @@ public class BedAura extends Module {
                     rotate = true;
                 }
             }
-            double progress = vanillaProgress = (float) (BlockUtils.getBlockHardness(block, (mode.getInput() == 2 && Utils.getTool(block) != -1) ? mc.thePlayer.inventory.getStackInSlot(Utils.getTool(block)) : mc.thePlayer.getHeldItem(), false, ignoreSlow.isToggled() || groundSpoof.isToggled()) * breakSpeed.getInput());
+            double progress = vanillaProgress = (float) (BlockUtils.getBlockHardness(block, (mode.getInput() == 2 && GeneralUtils.getTool(block) != -1) ? mc.thePlayer.inventory.getStackInSlot(GeneralUtils.getTool(block)) : mc.thePlayer.getHeldItem(), false, ignoreSlow.isToggled() || groundSpoof.isToggled()) * breakSpeed.getInput());
             if (lastProgress != 0 && breakProgress >= lastProgress) {
                 ModuleManager.killAura.resetBlinkState(false);
                 stopAutoblock = true;
             }
-            breakProgress += progress;
+            breakProgress += (float) progress;
             breakProgressMap.put(blockPos, breakProgress);
             if (sendAnimations.isToggled()) {
                 mc.theWorld.sendBlockBreakProgress(mc.thePlayer.getEntityId(), blockPos, (int) ((breakProgress * 10) - 1));
@@ -432,7 +432,7 @@ public class BedAura extends Module {
                 swing();
             }
             startBreak(blockPos);
-            setSlot(Utils.getTool(block));
+            setSlot(GeneralUtils.getTool(block));
             stopBreak(blockPos);
         }
     }

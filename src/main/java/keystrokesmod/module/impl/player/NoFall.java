@@ -2,10 +2,10 @@ package keystrokesmod.module.impl.player;
 
 import keystrokesmod.event.PreMotionEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.ReflectHelper;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.ReflectUtil;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.lenni0451.asmevents.event.enums.EnumEventPriority;
 import net.minecraft.network.play.client.C03PacketPlayer;
@@ -18,7 +18,7 @@ public class NoFall extends Module {
     private String[] modes = new String[]{"Spoof", "Extra", "NoGround"};
 
     public NoFall() {
-        super("NoFall", category.player);
+        super("NoFall", Category.player);
         this.registerSetting(mode = new SliderSetting("Mode", modes, 0));
         this.registerSetting(minFallDistance = new SliderSetting("Minimum fall distance", 3, 0, 10, 0.1));
         this.registerSetting(disableAdventure = new ButtonSetting("Disable adventure", false));
@@ -26,12 +26,12 @@ public class NoFall extends Module {
     }
 
     public void onDisable() {
-        Utils.resetTimer();
+        GeneralUtils.resetTimer();
     }
 
     @EventTarget(priority = EnumEventPriority.LOWEST)
     public void onPreMotion(PreMotionEvent e) {
-        Utils.resetTimer();
+        GeneralUtils.resetTimer();
         if (disableAdventure.isToggled() && mc.playerController.getCurrentGameType().isAdventure()) {
             return;
         }
@@ -46,19 +46,19 @@ public class NoFall extends Module {
                 case 1:
                     float fallDistance = 0;
                     try {
-                        fallDistance = ReflectHelper.fallDistance.getFloat(mc.thePlayer);
+                        fallDistance = ReflectUtil.fallDistance.getFloat(mc.thePlayer);
                     }
                     catch (Exception exception) {
-                        Utils.sendMessage("&cFailed to get fall distance.");
+                        GeneralUtils.sendMessage("&cFailed to get fall distance.");
                     }
                     if (fallDistance > minFallDistance.getInput()) {
-                        Utils.getTimer().timerSpeed = (float) 0.5;
+                        GeneralUtils.getTimer().timerSpeed = (float) 0.5;
                         mc.getNetHandler().addToSendQueue(new C03PacketPlayer(true));
                         try {
-                            ReflectHelper.fallDistance.setFloat(mc.thePlayer, 0);
+                            ReflectUtil.fallDistance.setFloat(mc.thePlayer, 0);
                         }
                         catch (Exception exception) {
-                            Utils.sendMessage("&cFailed to set fall distance to 0.");
+                            GeneralUtils.sendMessage("&cFailed to set fall distance to 0.");
                         }
                     }
                     break;
@@ -75,6 +75,6 @@ public class NoFall extends Module {
     }
 
     private boolean isVoid() {
-        return Utils.overVoid(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ);
+        return GeneralUtils.overVoid(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ);
     }
 }

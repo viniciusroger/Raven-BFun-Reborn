@@ -1,13 +1,12 @@
 package keystrokesmod.module.impl.movement;
 
-import keystrokesmod.Raven;
 import keystrokesmod.event.PostMotionEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.ModuleManager;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.manager.ModuleManager;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemPotion;
@@ -26,7 +25,7 @@ public class NoSlow extends Module {
     private boolean postPlace;
 
     public NoSlow() {
-        super("NoSlow", Module.category.movement, 0);
+        super("NoSlow", Category.movement, 0);
         this.registerSetting(new DescriptionSetting("Default is 80% motion reduction."));
         this.registerSetting(mode = new SliderSetting("Mode", modes, 0));
         this.registerSetting(slowed = new SliderSetting("Slow %", 80.0D, 0.0D, 80.0D, 1.0D));
@@ -41,7 +40,7 @@ public class NoSlow extends Module {
             return;
         }
         postPlace = false;
-        if (vanillaSword.isToggled() && Utils.holdingSword()) {
+        if (vanillaSword.isToggled() && GeneralUtils.holdingSword()) {
             return;
         }
         boolean apply = getSlowed() != 0.2f;
@@ -50,7 +49,7 @@ public class NoSlow extends Module {
         }
         switch ((int) mode.getInput()) {
             case 1:
-                if (mc.thePlayer.ticksExisted % 3 == 0 && !Raven.badPacketsHandler.C07) {
+                if (mc.thePlayer.ticksExisted % 3 == 0) {
                     mc.thePlayer.sendQueue.addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
                 }
                 break;
@@ -58,7 +57,7 @@ public class NoSlow extends Module {
                 postPlace = true;
                 break;
             case 3:
-                if (mc.thePlayer.ticksExisted % 3 == 0 && !Raven.badPacketsHandler.C07) {
+                if (mc.thePlayer.ticksExisted % 3 == 0) {
                     mc.thePlayer.sendQueue.addToSendQueue(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 1, null, 0, 0, 0));
                 }
         }
@@ -67,7 +66,7 @@ public class NoSlow extends Module {
     @EventTarget
     public void onPostMotion(PostMotionEvent e) {
         if (postPlace && mode.getInput() == 3) {
-            if (mc.thePlayer.ticksExisted % 3 == 0 && !Raven.badPacketsHandler.C07) {
+            if (mc.thePlayer.ticksExisted % 3 == 0) {
                 mc.thePlayer.sendQueue.addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
             }
             postPlace = false;

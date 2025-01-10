@@ -2,9 +2,9 @@ package keystrokesmod.module.impl.client;
 
 import keystrokesmod.Raven;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.GeneralUtils;
 import org.lwjgl.input.Keyboard;
 
 public class Gui extends Module {
@@ -15,7 +15,7 @@ public class Gui extends Module {
     public static ButtonSetting rainBowOutlines;
 
     public Gui() {
-        super("Gui", category.client, Keyboard.KEY_RSHIFT);
+        super("Gui", Category.client, Keyboard.KEY_RSHIFT);
 
         this.registerSetting(rainBowOutlines = new ButtonSetting("Rainbow outlines", true));
         this.registerSetting(removePlayerModel = new ButtonSetting("Remove player model", false));
@@ -24,7 +24,7 @@ public class Gui extends Module {
     }
 
     public void onEnable() {
-        if (Utils.nullCheck() && mc.currentScreen != Raven.clickGui) {
+        if (GeneralUtils.nullCheck() && mc.currentScreen != Raven.clickGui) {
             mc.displayGuiScreen(Raven.clickGui);
             Raven.clickGui.initMain();
         }

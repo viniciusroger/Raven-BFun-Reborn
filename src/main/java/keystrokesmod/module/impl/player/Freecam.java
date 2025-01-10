@@ -3,10 +3,10 @@ package keystrokesmod.module.impl.player;
 import keystrokesmod.event.Render3DEvent;
 import keystrokesmod.event.SendPacketEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.network.play.client.C02PacketUseEntity;
@@ -30,7 +30,7 @@ public class Freecam extends Module {
     private float[] sAng = new float[]{0.0F, 0.0F};
 
     public Freecam() {
-        super("Freecam", category.player, 0);
+        super("Freecam", Category.player, 0);
         this.registerSetting(speed = new SliderSetting("Speed", 2.5D, 0.5D, 10.0D, 0.5D));
         this.registerSetting(disableOnDamage = new ButtonSetting("Disable on damage", true));
         this.registerSetting(allowDigging = new ButtonSetting("Allow digging", false));
@@ -122,7 +122,7 @@ public class Freecam extends Module {
                 freeEntity.posZ += dz;
             }
 
-            if (Utils.jumpDown()) {
+            if (GeneralUtils.jumpDown()) {
                 freeEntity.posY += 0.93D * s;
             }
 
@@ -144,7 +144,7 @@ public class Freecam extends Module {
 
     @EventTarget
     public void re(Render3DEvent e) {
-        if (Utils.nullCheck()) {
+        if (GeneralUtils.nullCheck()) {
             if (!showArm.isToggled()) {
                 mc.thePlayer.renderArmPitch = mc.thePlayer.prevRenderArmPitch = 700.0F;
             }
@@ -156,7 +156,7 @@ public class Freecam extends Module {
 
     @EventTarget
     public void m(MouseEvent e) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
         if ((e.button == 0 && !allowDigging.isToggled() || e.button == 1 && !allowPlacing.isToggled()) && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
@@ -171,7 +171,7 @@ public class Freecam extends Module {
 
     @EventTarget
     public void onSendPacket(SendPacketEvent e) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
         if (!allowDigging.isToggled()) {

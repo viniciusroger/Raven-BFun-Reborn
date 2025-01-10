@@ -2,10 +2,10 @@ package keystrokesmod.module.impl.movement;
 
 import keystrokesmod.event.Render2DEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import org.apache.commons.lang3.RandomUtils;
 
@@ -20,7 +20,7 @@ public class Fly extends Module {
     private String[] modes = new String[]{"Vanilla", "Fast", "Fast 2"};
 
     public Fly() {
-        super("Fly", category.movement);
+        super("Fly", Category.movement);
         this.registerSetting(mode = new SliderSetting("Fly", modes, 0));
         this.registerSetting(horizontalSpeed = new SliderSetting("Horizontal speed", 2.0, 1.0, 9.0, 0.1));
         this.registerSetting(verticalSpeed = new SliderSetting("Vertical speed", 2.0, 1.0, 9.0, 0.1));
@@ -42,10 +42,10 @@ public class Fly extends Module {
             case 1:
                 mc.thePlayer.onGround = true;
                 if (mc.currentScreen == null) {
-                    if (Utils.jumpDown()) {
+                    if (GeneralUtils.jumpDown()) {
                         mc.thePlayer.motionY = 0.3 * verticalSpeed.getInput();
                     }
-                    else if (Utils.jumpDown()) {
+                    else if (GeneralUtils.jumpDown()) {
                         mc.thePlayer.motionY = -0.3 * verticalSpeed.getInput();
                     }
                     else {
@@ -102,7 +102,7 @@ public class Fly extends Module {
 
     @EventTarget
     public void onRenderTick(Render2DEvent e) {
-        if (!showBPS.isToggled() || !Utils.nullCheck()) {
+        if (!showBPS.isToggled() || !GeneralUtils.nullCheck()) {
             return;
         }
         if (mc.currentScreen != null || mc.gameSettings.showDebugInfo) {

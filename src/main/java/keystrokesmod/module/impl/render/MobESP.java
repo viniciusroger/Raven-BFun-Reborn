@@ -2,9 +2,9 @@ package keystrokesmod.module.impl.render;
 
 import keystrokesmod.event.Render3DEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,7 +16,7 @@ public class MobESP extends Module {
     private static ButtonSetting blaze, creeper, enderman, ghast, silverfish, skeleton, slime, spider, zombie, zombiePigman;
 
     public MobESP() {
-        super("MobESP", category.render);
+        super("MobESP", Category.render);
         this.registerSetting(blaze = new ButtonSetting("Blaze", true));
         this.registerSetting(creeper = new ButtonSetting("Creeper", true));
         this.registerSetting(enderman = new ButtonSetting("Enderman", true));
@@ -89,7 +89,7 @@ public class MobESP extends Module {
 
     @EventTarget
     public void onRenderWorldLast(Render3DEvent e) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
         for (Entity entity : mc.theWorld.loadedEntityList) {

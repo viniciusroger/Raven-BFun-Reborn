@@ -2,11 +2,11 @@ package keystrokesmod.module.impl.combat;
 
 import keystrokesmod.event.LivingUpdateEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.ModuleManager;
+import keystrokesmod.manager.ModuleManager;
 import keystrokesmod.module.impl.movement.LongJump;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import org.lwjgl.input.Keyboard;
 
@@ -18,7 +18,7 @@ public class Velocity extends Module {
     private ButtonSetting disableS;
 
     public Velocity() {
-        super("Velocity", category.combat, 0);
+        super("Velocity", Category.combat, 0);
         this.registerSetting(horizontal = new SliderSetting("Horizontal", 90.0D, 0.0D, 100.0D, 1.0D));
         this.registerSetting(vertical = new SliderSetting("Vertical", 100.0D, 0.0D, 100.0D, 1.0D));
         this.registerSetting(chance = new SliderSetting("Chance", 100.0D, 0.0D, 100.0D, 1.0D, "%"));
@@ -33,7 +33,7 @@ public class Velocity extends Module {
 
     @EventTarget
     public void onLivingUpdate(LivingUpdateEvent ev) {
-        if (Utils.nullCheck() && !LongJump.stopModules && !ModuleManager.bedAura.cancelKnockback()) {
+        if (GeneralUtils.nullCheck() && !LongJump.stopModules && !ModuleManager.bedAura.cancelKnockback()) {
             if (ModuleManager.antiKnockback.isEnabled()) {
                 return;
             }

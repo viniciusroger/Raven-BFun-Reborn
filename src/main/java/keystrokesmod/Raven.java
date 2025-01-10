@@ -4,15 +4,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import keystrokesmod.event.TickEvent;
-import keystrokesmod.keystroke.KeySrokeRenderer;
-import keystrokesmod.keystroke.KeyStrokeConfigGui;
-import keystrokesmod.keystroke.keystrokeCommand;
+import keystrokesmod.manager.CommandManager;
+import keystrokesmod.setting.Setting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.ui.keystroke.KeySrokeRenderer;
+import keystrokesmod.ui.keystroke.KeyStrokeConfigGui;
+import keystrokesmod.ui.keystroke.keystrokeCommand;
 import keystrokesmod.module.Module;
-import keystrokesmod.clickgui.ClickGui;
-import keystrokesmod.module.ModuleManager;
-import keystrokesmod.utility.*;
-import keystrokesmod.utility.profile.Profile;
-import keystrokesmod.utility.profile.ProfileManager;
+import keystrokesmod.ui.clickgui.ClickGui;
+import keystrokesmod.manager.ModuleManager;
+import keystrokesmod.ui.debuginfo.DebugInfoRenderer;
+import keystrokesmod.util.*;
+import keystrokesmod.profile.Profile;
+import keystrokesmod.manager.ProfileManager;
 import net.lenni0451.asmevents.EventManager;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.lenni0451.asmevents.event.enums.EnumEventType;
@@ -38,10 +42,11 @@ public class Raven {
     public static ClickGui clickGui;
     public static ProfileManager profileManager;
     public static Profile currentProfile;
-    public static BadPacketsHandler badPacketsHandler;
+    public static CommandManager commandManager;
 
     public Raven() {
         moduleManager = new ModuleManager();
+        commandManager = new CommandManager();
     }
 
     @EventHandler
@@ -50,13 +55,12 @@ public class Raven {
         ClientCommandHandler.instance.registerCommand(new keystrokeCommand());
         EventManager.register(this);
         EventManager.register(new DebugInfoRenderer());
-        EventManager.register(new CPSCalculator());
+        EventManager.register(new CPSUtil());
         EventManager.register(new KeySrokeRenderer());
-        EventManager.register(new Ping());
-        EventManager.register(badPacketsHandler = new BadPacketsHandler());
-        ReflectHelper.getFields();
-        ReflectHelper.getMethods();
+        ReflectUtil.getFields();
+        ReflectUtil.getMethods();
         moduleManager.register();
+        commandManager.register();
         keySrokeRenderer = new KeySrokeRenderer();
         clickGui = new ClickGui();
         profileManager = new ProfileManager();
@@ -68,12 +72,12 @@ public class Raven {
     @EventTarget
     public void onTick(TickEvent e) {
         if (e.getType() == EnumEventType.POST) {
-            if (Utils.nullCheck()) {
-                if (ReflectHelper.sendMessage) {
-                    Utils.sendMessage("&cThere was an error, relaunch the game.");
-                    ReflectHelper.sendMessage = false;
+            if (GeneralUtils.nullCheck()) {
+                if (ReflectUtil.sendMessage) {
+                    GeneralUtils.sendMessage("&cThere was an error, relaunch the game.");
+                    ReflectUtil.sendMessage = false;
                 }
-                for (Module module : getModuleManager().getModules()) {
+                for (Module module : ModuleManager.getModules()) {
                     if (mc.currentScreen == null && module.canBeEnabled()) {
                         module.keybind();
                     } else if (mc.currentScreen instanceof ClickGui) {
@@ -82,6 +86,11 @@ public class Raven {
 
                     if (module.isEnabled()) {
                         module.onUpdate();
+                    }
+
+                    for (Setting setting : module.getSettings()) {
+                        if (setting instanceof SliderSetting)
+                            ((SliderSetting) setting).correctValue();
                     }
                 }
                 for (Profile profile : Raven.profileManager.profiles) {

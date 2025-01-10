@@ -1,12 +1,12 @@
 package keystrokesmod.module.impl.render;
 
-import keystrokesmod.clickgui.ClickGui;
+import keystrokesmod.ui.clickgui.ClickGui;
 import keystrokesmod.event.Render2DEvent;
 import keystrokesmod.module.Module;
 import keystrokesmod.module.impl.world.AntiBot;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -18,9 +18,9 @@ import java.awt.*;
 public class Radar extends Module {
     private ButtonSetting tracerLines;
     private int scale = 2;
-    private int rectColor = new Color(0, 0, 0, 125).getRGB();
+    private final int rectColor = new Color(0, 0, 0, 125).getRGB();
     public Radar() {
-        super("Radar", category.render);
+        super("Radar", Category.render);
         this.registerSetting(tracerLines = new ButtonSetting("Show tracer lines", false));
     }
 
@@ -30,7 +30,7 @@ public class Radar extends Module {
 
     @EventTarget
     public void onRenderTick(Render2DEvent e) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
         if (mc.currentScreen instanceof ClickGui) {

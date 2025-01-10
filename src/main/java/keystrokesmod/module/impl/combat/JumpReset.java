@@ -3,8 +3,8 @@ package keystrokesmod.module.impl.combat;
 import keystrokesmod.event.JumpEvent;
 import keystrokesmod.event.LivingUpdateEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 
 public class JumpReset extends Module {
@@ -13,7 +13,7 @@ public class JumpReset extends Module {
     private boolean jump;
 
     public JumpReset() {
-        super("Jump Reset", category.combat);
+        super("Jump Reset", Category.combat);
         this.registerSetting(chance = new SliderSetting("Chance", 80, 0, 100, 1, "%"));
         this.registerSetting(motion = new SliderSetting("Jump motion", 0.42, 0, 1, 0.01));
     }
@@ -24,7 +24,7 @@ public class JumpReset extends Module {
 
     @EventTarget
     public void onLivingUpdate(LivingUpdateEvent ev) {
-        if (Utils.nullCheck()) {
+        if (GeneralUtils.nullCheck()) {
             if (chance.getInput() == 0) {
                 return;
             }
@@ -54,7 +54,7 @@ public class JumpReset extends Module {
 
     @EventTarget
     public void onJump(JumpEvent e) {
-        if (!Utils.nullCheck() || !jump) {
+        if (!GeneralUtils.nullCheck() || !jump) {
             return;
         }
         if (motion.getInput() != 0.42) {

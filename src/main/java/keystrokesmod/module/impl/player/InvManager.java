@@ -1,10 +1,10 @@
 package keystrokesmod.module.impl.player;
 
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.BlockUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.BlockUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.minecraft.block.*;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -47,7 +47,7 @@ public class InvManager extends Module {
     private int lastClean;
 
     public InvManager() {
-        super("InvManager", category.player);
+        super("InvManager", Category.player);
         this.registerSetting(autoArmor = new ButtonSetting("Auto armor", false));
         this.registerSetting(autoArmorDelay = new SliderSetting("Auto armor delay", 3, 1, 20, 1));
         this.registerSetting(autoSort = new ButtonSetting("Auto sort", false));
@@ -72,7 +72,7 @@ public class InvManager extends Module {
     }
 
     public void onUpdate() {
-        if (Utils.inInventory()) {
+        if (GeneralUtils.inInventory()) {
             if (autoArmor.isToggled() && lastArmor++ >= autoArmorDelay.getInput()) {
                 for (int i = 0; i < 4; i++) {
                     int bestSlot = getBestArmor(i, null);
@@ -375,7 +375,7 @@ public class InvManager extends Module {
         if (desiredSlot != -1) {
             ItemStack itemStackInSlot = getItemStack(desiredSlot + 35);
             if (itemStackInSlot != null && itemStackInSlot.getItem() instanceof ItemSword) {
-                damageInSlot = Utils.getDamage(itemStackInSlot);
+                damageInSlot = GeneralUtils.getDamage(itemStackInSlot);
             }
         }
         for (int i = 9; i < 45; i++) {
@@ -383,7 +383,7 @@ public class InvManager extends Module {
             if (item == null || !(item.getItem() instanceof ItemSword)) {
                 continue;
             }
-            double damage = Utils.getDamage(item);
+            double damage = GeneralUtils.getDamage(item);
             if (damage > lastDamage && damage > damageInSlot) {
                 lastDamage = damage;
                 bestSword = i;
@@ -395,7 +395,7 @@ public class InvManager extends Module {
                 if (item == null || !(item.getItem() instanceof ItemSword)) {
                     continue;
                 }
-                double damage = Utils.getDamage(item);
+                double damage = GeneralUtils.getDamage(item);
                 if (damage > lastDamage && damage > damageInSlot) {
                     lastDamage = damage;
                     bestSword = i;
@@ -488,8 +488,8 @@ public class InvManager extends Module {
         Item item = stack.getItem();
         if (item instanceof ItemBow) {
             score += EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, stack);
-            score += EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, stack) * 0.5;
-            score += EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack) * 0.1;
+            score += (float) (EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, stack) * 0.5);
+            score += (float) (EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack) * 0.1);
         }
         return score;
     }
@@ -539,7 +539,7 @@ public class InvManager extends Module {
             if (item == null || !(item.getItem() instanceof ItemTool) || item.getItem() != itemStack.getItem()) {
                 continue;
             }
-            double efficiency = Utils.getEfficiency(item, blockType);
+            double efficiency = GeneralUtils.getEfficiency(item, blockType);
             if (efficiency > lastEfficiency) {
                 lastEfficiency = efficiency;
                 bestTool = i;
@@ -551,7 +551,7 @@ public class InvManager extends Module {
                 if (item == null || !(item.getItem() instanceof ItemTool) || item.getItem() != itemStack.getItem()) {
                     continue;
                 }
-                double efficiency = Utils.getEfficiency(item, blockType);;
+                double efficiency = GeneralUtils.getEfficiency(item, blockType);;
                 if (efficiency > lastEfficiency) {
                     lastEfficiency = efficiency;
                     bestTool = i;
@@ -714,11 +714,8 @@ public class InvManager extends Module {
         if (slot == null) {
             return null;
         }
-        ItemStack item = slot.getStack();
-        if (item == null) {
-            return null;
-        }
-        return item;
+
+		return slot.getStack();
     }
 
     public static boolean canBePlaced(ItemBlock itemBlock) {
@@ -726,9 +723,6 @@ public class InvManager extends Module {
         if (block == null) {
             return false;
         }
-        if (BlockUtils.isInteractable(block) || block instanceof BlockLever || block instanceof BlockButton || block instanceof BlockSkull || block instanceof BlockLiquid || block instanceof BlockCactus || block instanceof BlockCarpet || block instanceof BlockTripWire || block instanceof BlockTripWireHook || block instanceof BlockTallGrass || block instanceof BlockFlower || block instanceof BlockFlowerPot || block instanceof BlockSign || block instanceof BlockLadder || block instanceof BlockTorch || block instanceof BlockRedstoneTorch || block instanceof BlockFence || block instanceof BlockPane || block instanceof BlockStainedGlassPane || block instanceof BlockGravel || block instanceof BlockClay || block instanceof BlockSand || block instanceof BlockSoulSand) {
-            return false;
-        }
-        return true;
-    }
+		return !BlockUtils.isInteractable(block) && !(block instanceof BlockLever) && !(block instanceof BlockButton) && !(block instanceof BlockSkull) && !(block instanceof BlockLiquid) && !(block instanceof BlockCactus) && !(block instanceof BlockCarpet) && !(block instanceof BlockTripWire) && !(block instanceof BlockTripWireHook) && !(block instanceof BlockTallGrass) && !(block instanceof BlockFlower) && !(block instanceof BlockFlowerPot) && !(block instanceof BlockSign) && !(block instanceof BlockLadder) && !(block instanceof BlockTorch) && !(block instanceof BlockRedstoneTorch) && !(block instanceof BlockFence) && !(block instanceof BlockPane) && !(block instanceof BlockStainedGlassPane) && !(block instanceof BlockGravel) && !(block instanceof BlockClay) && !(block instanceof BlockSand) && !(block instanceof BlockSoulSand);
+	}
 }

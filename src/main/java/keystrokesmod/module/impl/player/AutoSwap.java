@@ -2,8 +2,8 @@ package keystrokesmod.module.impl.player;
 
 import keystrokesmod.event.PreUpdateEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.DescriptionSetting;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -12,7 +12,7 @@ public class AutoSwap extends Module {
     private ButtonSetting sameType;
     private ButtonSetting swapToGreaterStack;
     public AutoSwap() {
-        super("AutoSwap", category.player);
+        super("AutoSwap", Category.player);
         this.registerSetting(new DescriptionSetting("Automatically swaps blocks."));
         this.registerSetting(sameType = new ButtonSetting("Only same type", true));
         this.registerSetting(swapToGreaterStack = new ButtonSetting("Swap to greater stack", true));

@@ -4,9 +4,9 @@ import keystrokesmod.event.PreMotionEvent;
 import keystrokesmod.event.ReceivePacketEvent;
 import keystrokesmod.event.SendPacketEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.lenni0451.asmevents.event.enums.EnumEventPriority;
 import net.minecraft.init.Items;
@@ -33,7 +33,7 @@ public class LongJump extends Module {
     private boolean threw;
     private String[] modes = new String[]{"Fireball", "Fireball Auto"};
     public LongJump() {
-        super("Long Jump", category.movement);
+        super("Long Jump", Category.movement);
         this.registerSetting(mode = new SliderSetting("Mode", modes, 0));
         this.registerSetting(horizontalBoost = new SliderSetting("Horizontal boost", 1.7, 0.0, 8.0, 0.1));
         this.registerSetting(verticalMotion = new SliderSetting("Vertical motion", 0, 0.0, 1.0, 0.01));
@@ -56,7 +56,7 @@ public class LongJump extends Module {
 
     @EventTarget
     public void onReceivePacket(ReceivePacketEvent e) {
-        if (e.getPacket() instanceof S12PacketEntityVelocity && Utils.nullCheck()) {
+        if (e.getPacket() instanceof S12PacketEntityVelocity && GeneralUtils.nullCheck()) {
             if (((S12PacketEntityVelocity) e.getPacket()).getEntityID() == mc.thePlayer.getEntityId() && threw) {
                 ticks = 0;
                 setSpeed = true;
@@ -68,7 +68,7 @@ public class LongJump extends Module {
 
     @EventTarget(priority = EnumEventPriority.LOWEST)
     public void onPreMotion(PreMotionEvent e) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
         if (mode.getInput() == 1) {
@@ -146,7 +146,7 @@ public class LongJump extends Module {
 
     public void onEnable() {
         if (getFireball() == -1 && mode.getInput() == 1) {
-            Utils.sendMessage("§cNo fireball found.");
+            GeneralUtils.sendMessage("§cNo fireball found.");
             this.disable();
             return;
         }
@@ -160,7 +160,7 @@ public class LongJump extends Module {
             mc.thePlayer.motionY = verticalMotion.getInput();
         }
         if (horizontalBoost.getInput() != 0.0) {
-            Utils.setSpeed(horizontalBoost.getInput());
+            GeneralUtils.setSpeed(horizontalBoost.getInput());
         }
     }
 

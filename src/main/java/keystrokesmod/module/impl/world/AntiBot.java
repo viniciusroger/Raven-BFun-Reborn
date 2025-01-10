@@ -2,11 +2,11 @@ package keystrokesmod.module.impl.world;
 
 import keystrokesmod.event.JoinWorldEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.ModuleManager;
+import keystrokesmod.manager.ModuleManager;
 import keystrokesmod.module.impl.player.Freecam;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.Entity;
@@ -17,17 +17,15 @@ import java.util.HashMap;
 import java.util.List;
 
 public class AntiBot extends Module {
-    private static final HashMap<EntityPlayer, Long> entities = new HashMap();
+    private static final HashMap<EntityPlayer, Long> entities = new HashMap<>();
     private static ButtonSetting entitySpawnDelay;
     private SliderSetting delay;
-    private static ButtonSetting pitSpawn;
     private static ButtonSetting tablist;
 
     public AntiBot() {
-        super("AntiBot", Module.category.world, 0);
+        super("AntiBot", Category.world, 0);
         this.registerSetting(entitySpawnDelay = new ButtonSetting("Entity spawn delay", false));
         this.registerSetting(delay = new SliderSetting("Delay", 7.0, 0.5, 15.0, 0.5, " second"));
-        this.registerSetting(pitSpawn = new ButtonSetting("Pit spawn", false));
         this.registerSetting(tablist = new ButtonSetting("Tab list", false));
     }
 
@@ -74,14 +72,7 @@ public class AntiBot extends Module {
         if (entityPlayer.getHealth() != 20.0f && entityPlayer.getName().startsWith("§c")) {
             return true;
         }
-        if (pitSpawn.isToggled() && entityPlayer.posY >= 114 && entityPlayer.posY <= 130 && entityPlayer.getDistance(0, 114, 0) <= 25) {
-            if (Utils.isHypixel()) {
-                List<String> sidebarLines = Utils.getSidebarLines();
-                if (!sidebarLines.isEmpty() && Utils.stripColor(sidebarLines.get(0)).contains("THE HYPIXEL PIT")) {
-                    return true;
-                }
-            }
-        }
+
         if (entityPlayer.maxHurtTime == 0) {
             if (entityPlayer.getHealth() == 20.0f) {
                 String unformattedText = entityPlayer.getDisplayName().getUnformattedText();
@@ -94,14 +85,12 @@ public class AntiBot extends Module {
                 if (unformattedText.length() >= 7 && unformattedText.charAt(2) == '[' && unformattedText.charAt(3) == 'N' && unformattedText.charAt(6) == ']') {
                     return true;
                 }
-                if (entityPlayer.getName().contains(" ")) {
-                    return true;
-                }
+
+				return entityPlayer.getName().contains(" ");
             } else if (entityPlayer.isInvisible()) {
                 String unformattedText = entityPlayer.getDisplayName().getUnformattedText();
-                if (unformattedText.length() >= 3 && unformattedText.charAt(0) == '§' && unformattedText.charAt(1) == 'c') {
-                    return true;
-                }
+
+                return unformattedText.length() >= 3 && unformattedText.charAt(0) == '§' && unformattedText.charAt(1) == 'c';
             }
         }
         return false;
@@ -109,7 +98,7 @@ public class AntiBot extends Module {
 
     private static List<String> getTablist() {
         List<String> tab = new ArrayList<>();
-        for (NetworkPlayerInfo networkPlayerInfo : Utils.getTablist()) {
+        for (NetworkPlayerInfo networkPlayerInfo : GeneralUtils.getTablist()) {
             if (networkPlayerInfo == null) {
                 continue;
             }

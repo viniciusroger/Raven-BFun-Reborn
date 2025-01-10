@@ -4,13 +4,13 @@ import keystrokesmod.event.Render2DEvent;
 import keystrokesmod.event.Render3DEvent;
 import keystrokesmod.module.Module;
 import keystrokesmod.module.impl.combat.KillAura;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Theme;
-import keystrokesmod.utility.Timer;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.enums.Theme;
+import keystrokesmod.misc.Timer;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -32,7 +32,7 @@ public class TargetHUD extends Module {
     public EntityLivingBase renderEntity;
 
     public TargetHUD() {
-        super("TargetHUD", category.render);
+        super("TargetHUD", Category.render);
         this.registerSetting(new DescriptionSetting("Only works with KillAura."));
         this.registerSetting(theme = new SliderSetting("Theme", Theme.themes, 0));
         this.registerSetting(renderEsp = new ButtonSetting("Render ESP", true));
@@ -46,7 +46,7 @@ public class TargetHUD extends Module {
 
     @EventTarget
     public void onRenderTick(Render2DEvent ev) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             reset();
             return;
         }
@@ -73,13 +73,13 @@ public class TargetHUD extends Module {
             (healthBarTimer = new Timer(350)).start();
         }
         lastHealth = health;
-        playerInfo += " " + Utils.getHealthStr(target);
+        playerInfo += " " + GeneralUtils.getHealthStr(target);
         drawTargetHUD(fadeTimer, playerInfo, health);
     }
 
     @EventTarget
     public void onRenderWorld(Render3DEvent renderWorldLastEvent) {
-        if (!renderEsp.isToggled() || !Utils.nullCheck()) {
+        if (!renderEsp.isToggled() || !GeneralUtils.nullCheck()) {
             return;
         }
         if (KillAura.target != null) {
@@ -92,7 +92,7 @@ public class TargetHUD extends Module {
 
     private void drawTargetHUD(Timer cd, String string, double health) {
         if (showStatus.isToggled()) {
-            string = string + " " + ((health <= Utils.getCompleteHealth(mc.thePlayer) / mc.thePlayer.getMaxHealth()) ? "§aW" : "§cL");
+            string = string + " " + ((health <= GeneralUtils.getCompleteHealth(mc.thePlayer) / mc.thePlayer.getMaxHealth()) ? "§aW" : "§cL");
         }
         final ScaledResolution scaledResolution = new ScaledResolution(mc);
         final int n2 = 8;
@@ -105,17 +105,17 @@ public class TargetHUD extends Module {
         final int n9 = n5 + (mc.fontRendererObj.FONT_HEIGHT + 5) - 6 + n2;
         final int n10 = (cd == null) ? 255 : (255 - cd.getValueInt(0, 255, 1));
         if (n10 > 0) {
-            final int n11 = (n10 > 110) ? 110 : n10;
-            final int n12 = (n10 > 210) ? 210 : n10;
+            final int n11 = Math.min(n10, 110);
+            final int n12 = Math.min(n10, 210);
             final int[] array = Theme.getGradients((int) theme.getInput());
-            RenderUtils.drawRoundedGradientOutlinedRectangle((float) n6, (float) n7, (float) n8, (float) (n9 + 13), 10.0f, Utils.merge(Color.black.getRGB(), n11), Utils.merge(array[0], n10), Utils.merge(array[1], n10)); // outline
+            RenderUtils.drawRoundedGradientOutlinedRectangle((float) n6, (float) n7, (float) n8, (float) (n9 + 13), 10.0f, GeneralUtils.merge(Color.black.getRGB(), n11), GeneralUtils.merge(array[0], n10), GeneralUtils.merge(array[1], n10)); // outline
             final int n13 = n6 + 6;
             final int n14 = n8 - 6;
             final int n15 = n9;
-            RenderUtils.drawRoundedRectangle((float) n13, (float) n15, (float) n14, (float) (n15 + 5), 4.0f, Utils.merge(Color.black.getRGB(), n11)); // background
-            int k = Utils.merge(array[0], n12);
-            int n16 = Utils.merge(array[1], n12);
-            float healthBar = (float) (int) (n14 + (n13 - n14) * (1.0 - ((health < 0.05) ? 0.05 : health)));
+            RenderUtils.drawRoundedRectangle((float) n13, (float) n15, (float) n14, (float) (n15 + 5), 4.0f, GeneralUtils.merge(Color.black.getRGB(), n11)); // background
+            int k = GeneralUtils.merge(array[0], n12);
+            int n16 = GeneralUtils.merge(array[1], n12);
+            float healthBar = (float) (int) (n14 + (n13 - n14) * (1.0 - (Math.max(health, 0.05))));
             if (healthBar - n13 < 3) { // if goes below, the rounded health bar glitches out
                 healthBar = n13 + 3;
             }
@@ -132,13 +132,13 @@ public class TargetHUD extends Module {
                 lastHealthBar = healthBar;
             }
             if (healthColor.isToggled()) {
-                k = n16 = Utils.merge(Utils.getColorForHealth(health), n12);
+                k = n16 = GeneralUtils.merge(GeneralUtils.getColorForHealth(health), n12);
             }
             RenderUtils.drawRoundedGradientRect((float) n13, (float) n15, lastHealthBar, (float) (n15 + 5), 4.0f, k, k, k, n16); // health bar
             GlStateManager.pushMatrix();
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-            mc.fontRendererObj.drawString(string, (float) n4, (float) n5, (new Color(220, 220, 220, 255).getRGB() & 0xFFFFFF) | Utils.clamp(n10 + 15) << 24, true);
+            mc.fontRendererObj.drawString(string, (float) n4, (float) n5, (new Color(220, 220, 220, 255).getRGB() & 0xFFFFFF) | GeneralUtils.clamp(n10 + 15) << 24, true);
             GlStateManager.disableBlend();
             GlStateManager.popMatrix();
         }

@@ -2,9 +2,9 @@ package keystrokesmod.module.impl.combat;
 
 import keystrokesmod.event.AttackEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,14 +17,14 @@ public class WTap extends Module {
     private final HashMap<Integer, Long> targets = new HashMap<>();
     public static boolean stopSprint = false;
     public WTap() {
-        super("WTap", category.combat);
+        super("WTap", Category.combat);
         this.registerSetting(chance = new SliderSetting("Chance", 100, 0, 100, 1, "%"));
         this.registerSetting(playersOnly = new ButtonSetting("Players only", true));
     }
 
     @EventTarget
     public void onAttack(AttackEvent event) {
-        if (!Utils.nullCheck() || !mc.thePlayer.isSprinting()) {
+        if (!GeneralUtils.nullCheck() || !mc.thePlayer.isSprinting()) {
             return;
         }
         if (chance.getInput() == 0) {
@@ -47,7 +47,7 @@ public class WTap extends Module {
         }
         final long currentTimeMillis = System.currentTimeMillis();
         final Long n = this.targets.get(event.getTarget().getEntityId());
-        if (n != null && Utils.getDifference(n, currentTimeMillis) <= 200L) {
+        if (n != null && GeneralUtils.getDifference(n, currentTimeMillis) <= 200L) {
             return;
         }
         if (chance.getInput() != 100.0D) {

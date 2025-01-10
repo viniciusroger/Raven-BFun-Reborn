@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "keystrokesmod.mixins.impl",
+  "package": "keystrokesmod.mixin.impl",
   "refmap": "mixins.raven.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
@@ -22,6 +22,7 @@
     "client.MixinMinecraft",
     "client.MixinPlayerControllerMP",
     "render.MixinGuiInGame",
+    "render.MixinGuiSpectator",
     "render.MixinRender"
   ]
 }

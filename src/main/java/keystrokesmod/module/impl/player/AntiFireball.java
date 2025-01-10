@@ -4,12 +4,12 @@ import keystrokesmod.event.JoinWorldEvent;
 import keystrokesmod.event.PreMotionEvent;
 import keystrokesmod.event.PreUpdateEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.ModuleManager;
+import keystrokesmod.manager.ModuleManager;
 import keystrokesmod.module.impl.combat.KillAura;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.RotationUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.RotationUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.lenni0451.asmevents.event.enums.EnumEventPriority;
 import net.minecraft.entity.Entity;
@@ -32,7 +32,7 @@ public class AntiFireball extends Module {
     public boolean attack;
 
     public AntiFireball() {
-        super("AntiFireball", category.player);
+        super("AntiFireball", Category.player);
         this.registerSetting(fov = new SliderSetting("FOV", 360.0, 30.0, 360.0, 4.0));
         this.registerSetting(range = new SliderSetting("Range", 8.0, 3.0, 15.0, 0.5));
         this.registerSetting(disableWhileFlying = new ButtonSetting("Disable while flying", false));
@@ -77,7 +77,7 @@ public class AntiFireball extends Module {
                 }
                 attack = true;
             } else {
-                Utils.attackEntity(fireball, !silentSwing.isToggled(), silentSwing.isToggled());
+                GeneralUtils.attackEntity(fireball, !silentSwing.isToggled(), silentSwing.isToggled());
             }
         }
     }
@@ -94,7 +94,7 @@ public class AntiFireball extends Module {
                 continue;
             }
             final float n = (float) fov.getInput();
-            if (n != 360.0f && !Utils.inFov(n, entity)) {
+            if (n != 360.0f && !GeneralUtils.inFov(n, entity)) {
                 continue;
             }
             return (EntityFireball) entity;
@@ -104,7 +104,7 @@ public class AntiFireball extends Module {
 
     @EventTarget
     public void onEntityJoin(JoinWorldEvent e) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
         if (e.getEntity() == mc.thePlayer) {
@@ -137,15 +137,13 @@ public class AntiFireball extends Module {
     }
 
     private boolean condition() {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return false;
         }
         if (mc.thePlayer.capabilities.isFlying && disableWhileFlying.isToggled()) {
             return false;
         }
-        if (ModuleManager.scaffold != null && ModuleManager.scaffold.isEnabled() && disableWhileScaffold.isToggled()) {
-            return false;
-        }
-        return true;
-    }
+
+        return ModuleManager.scaffold == null || !ModuleManager.scaffold.isEnabled() || !disableWhileScaffold.isToggled();
+	}
 }

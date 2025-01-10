@@ -2,9 +2,9 @@ package keystrokesmod.module.impl.render;
 
 import keystrokesmod.event.Render3DEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
@@ -23,7 +23,7 @@ public class ItemESP extends Module {
     private ButtonSetting renderIron, renderGold;
 
     public ItemESP() {
-        super("ItemESP", category.render);
+        super("ItemESP", Category.render);
         this.registerSetting(renderIron = new ButtonSetting("Render iron", true));
         this.registerSetting(renderGold = new ButtonSetting("Render gold", true));
     }
@@ -64,7 +64,7 @@ public class ItemESP extends Module {
             }
         }
         if (!hashMap.isEmpty()) {
-            float renderPartialTicks = Utils.getTimer().renderPartialTicks;
+            float renderPartialTicks = GeneralUtils.getTimer().renderPartialTicks;
             for (Map.Entry<Item, ArrayList<EntityItem>> entry : hashMap.entrySet()) {
                 Item item = entry.getKey();
                 int n4;

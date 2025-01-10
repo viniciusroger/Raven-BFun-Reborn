@@ -1,10 +1,10 @@
 package keystrokesmod.module.impl.movement;
 
 import keystrokesmod.module.Module;
-import keystrokesmod.module.ModuleManager;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.manager.ModuleManager;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.GeneralUtils;
 
 public class Boost extends Module {
     public static DescriptionSetting c;
@@ -14,7 +14,7 @@ public class Boost extends Module {
     private boolean t = false;
 
     public Boost() {
-        super("Boost", Module.category.movement, 0);
+        super("Boost", Category.movement, 0);
         this.registerSetting(c = new DescriptionSetting("20 ticks are in 1 second"));
         this.registerSetting(a = new SliderSetting("Multiplier", 2.0D, 1.0D, 3.0D, 0.05D));
         this.registerSetting(b = new SliderSetting("Time (ticks)", 15.0D, 1.0D, 80.0D, 1.0D));
@@ -30,8 +30,8 @@ public class Boost extends Module {
 
     public void onDisable() {
         this.i = 0;
-        if (Utils.getTimer().timerSpeed != 1.0F) {
-            Utils.resetTimer();
+        if (GeneralUtils.getTimer().timerSpeed != 1.0F) {
+            GeneralUtils.resetTimer();
         }
 
         if (this.t) {
@@ -46,9 +46,9 @@ public class Boost extends Module {
             this.i = mc.thePlayer.ticksExisted;
         }
 
-        Utils.getTimer().timerSpeed = (float) a.getInput();
+        GeneralUtils.getTimer().timerSpeed = (float) a.getInput();
         if ((double) this.i == (double) mc.thePlayer.ticksExisted - b.getInput()) {
-            Utils.resetTimer();
+            GeneralUtils.resetTimer();
             this.disable();
         }
 

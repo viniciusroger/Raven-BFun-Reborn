@@ -2,12 +2,12 @@ package keystrokesmod.module.impl.combat;
 
 import keystrokesmod.event.ReceivePacketEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.ModuleManager;
+import keystrokesmod.manager.ModuleManager;
 import keystrokesmod.module.impl.movement.LongJump;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.network.play.server.S27PacketExplosion;
@@ -24,7 +24,7 @@ public class AntiKnockback extends Module {
     private ButtonSetting lobbyCheck;
 
     public AntiKnockback() {
-        super("AntiKnockback", category.combat);
+        super("AntiKnockback", Category.combat);
         this.registerSetting(new DescriptionSetting("Overrides Velocity."));
         this.registerSetting(horizontal = new SliderSetting("Horizontal", 0.0, 0.0, 100.0, 1.0));
         this.registerSetting(vertical = new SliderSetting("Vertical", 0.0, 0.0, 100.0, 1.0));
@@ -37,7 +37,7 @@ public class AntiKnockback extends Module {
 
     @EventTarget
     public void onReceivePacket(ReceivePacketEvent e) {
-        if (!Utils.nullCheck() || LongJump.stopModules || e.isCancelled()) {
+        if (!GeneralUtils.nullCheck() || LongJump.stopModules || e.isCancelled()) {
             return;
         }
         if (e.getPacket() instanceof S12PacketEntityVelocity) {
@@ -68,7 +68,7 @@ public class AntiKnockback extends Module {
                     if (groundCheck.isToggled() && !mc.thePlayer.onGround) {
                         return;
                     }
-                    Utils.setSpeed(Utils.getHorizontalSpeed() * boostMultiplier.getInput()); // from croat
+                    GeneralUtils.setSpeed(GeneralUtils.getHorizontalSpeed() * boostMultiplier.getInput()); // from croat
                 }
             }
         }
@@ -107,10 +107,10 @@ public class AntiKnockback extends Module {
     }
 
     private boolean isLobby() {
-        if (Utils.isHypixel()) {
-            List<String> sidebarLines = Utils.getSidebarLines();
+        if (GeneralUtils.isHypixel()) {
+            List<String> sidebarLines = GeneralUtils.getSidebarLines();
             if (!sidebarLines.isEmpty()) {
-                String[] parts = Utils.stripColor(sidebarLines.get(1)).split("  ");
+                String[] parts = GeneralUtils.stripColor(sidebarLines.get(1)).split("  ");
                 if (parts.length > 1 && parts[1].charAt(0) == 'L') {
                     return true;
                 }

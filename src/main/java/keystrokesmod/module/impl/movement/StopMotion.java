@@ -1,7 +1,7 @@
 package keystrokesmod.module.impl.movement;
 
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.ButtonSetting;
 
 public class StopMotion extends Module {
     private ButtonSetting stopX;
@@ -9,7 +9,7 @@ public class StopMotion extends Module {
     private ButtonSetting stopZ;
 
     public StopMotion() {
-        super("Stop Motion", Module.category.movement, 0);
+        super("Stop Motion", Category.movement, 0);
         this.registerSetting(stopX = new ButtonSetting("Stop X", true));
         this.registerSetting(stopY = new ButtonSetting("Stop Y", true));
         this.registerSetting(stopZ = new ButtonSetting("Stop Z", true));

@@ -3,11 +3,11 @@ package keystrokesmod.module.impl.combat;
 import keystrokesmod.event.PreMotionEvent;
 import keystrokesmod.module.Module;
 import keystrokesmod.module.impl.world.AntiBot;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.ReflectHelper;
-import keystrokesmod.utility.RotationUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.ReflectUtil;
+import keystrokesmod.util.RotationUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFishingRod;
@@ -24,7 +24,7 @@ public class RodAimbot extends Module {
     private EntityPlayer entity;
 
     public RodAimbot() {
-        super("RodAimbot", Module.category.combat, 0);
+        super("RodAimbot", Category.combat, 0);
         this.registerSetting(fov = new SliderSetting("FOV", 180, 30, 360, 4));
         this.registerSetting(predicatedTicks = new SliderSetting("Predicted ticks", 5.0, 0.0, 20.0, 1.0));
         this.registerSetting(distance = new SliderSetting("Distance", 6, 3, 30, 0.5));
@@ -40,7 +40,7 @@ public class RodAimbot extends Module {
 
     @EventTarget
     public void onMouse(final MouseEvent mouseEvent) {
-        if (mouseEvent.button != 1 || !mouseEvent.buttonstate || !Utils.nullCheck() || mc.currentScreen != null) {
+        if (mouseEvent.button != 1 || !mouseEvent.buttonstate || !GeneralUtils.nullCheck() || mc.currentScreen != null) {
             return;
         }
         if (mc.thePlayer.getCurrentEquippedItem() == null || !(mc.thePlayer.getCurrentEquippedItem().getItem() instanceof ItemFishingRod) || mc.thePlayer.fishEntity != null) {
@@ -57,7 +57,7 @@ public class RodAimbot extends Module {
 
     @EventTarget
     public void onPreMotion(PreMotionEvent event) {
-        if (!Utils.nullCheck()) {
+        if (!GeneralUtils.nullCheck()) {
             return;
         }
         if (rightClick || rotate) {
@@ -71,7 +71,7 @@ public class RodAimbot extends Module {
                 rotate = false;
             }
             if (rightClick) {
-                ReflectHelper.rightClick();
+                ReflectUtil.rightClick();
                 rightClick = false;
             }
         }
@@ -89,17 +89,17 @@ public class RodAimbot extends Module {
                 if (mc.thePlayer.getDistanceSqToEntity(entityPlayer) > distance.getInput() * distance.getInput()) {
                     continue;
                 }
-                if (Utils.isFriended(entityPlayer)) {
+                if (GeneralUtils.isFriended(entityPlayer)) {
                     continue;
                 }
                 final float n = (float)fov.getInput();
-                if (n != 360.0f && !Utils.inFov(n, entityPlayer)) {
+                if (n != 360.0f && !GeneralUtils.inFov(n, entityPlayer)) {
                     continue;
                 }
                 if (AntiBot.isBot(entityPlayer)) {
                     continue;
                 }
-                if (ignoreTeammates.isToggled() && Utils.isTeamMate(entityPlayer)) {
+                if (ignoreTeammates.isToggled() && GeneralUtils.isTeamMate(entityPlayer)) {
                     continue;
                 }
                 return entityPlayer;

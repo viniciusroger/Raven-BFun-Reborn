@@ -1,10 +1,9 @@
 package keystrokesmod.module.impl.movement;
 
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.Utils;
-import net.minecraftforge.event.world.BlockEvent;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.GeneralUtils;
 import org.lwjgl.input.Keyboard;
 
 public class BHop extends Module {
@@ -18,7 +17,7 @@ public class BHop extends Module {
     public boolean hopping;
 
     public BHop() {
-        super("Bhop", Module.category.movement);
+        super("Bhop", Category.movement);
         this.registerSetting(mode = new SliderSetting("Mode", modes, 0));
         this.registerSetting(speed = new SliderSetting("Speed", 2.0, 0.5, 8.0, 0.1));
         this.registerSetting(autoJump = new ButtonSetting("Auto jump", true));
@@ -38,18 +37,18 @@ public class BHop extends Module {
         }
         switch ((int) mode.getInput()) {
             case 0:
-                if (Utils.isMoving()) {
+                if (GeneralUtils.isMoving()) {
                     if (mc.thePlayer.onGround && autoJump.isToggled()) {
                         mc.thePlayer.jump();
                     }
                     mc.thePlayer.setSprinting(true);
-                    Utils.setSpeed(Utils.getHorizontalSpeed() + 0.005 * speed.getInput());
+                    GeneralUtils.setSpeed(GeneralUtils.getHorizontalSpeed() + 0.005 * speed.getInput());
                     hopping = true;
                     break;
                 }
                 break;
             case 1:
-                if (!Utils.jumpDown() && Utils.isMoving() && mc.currentScreen == null) {
+                if (!GeneralUtils.jumpDown() && GeneralUtils.isMoving() && mc.currentScreen == null) {
                     if (!mc.thePlayer.onGround) {
                         break;
                     }
@@ -60,12 +59,12 @@ public class BHop extends Module {
                         return;
                     }
                     mc.thePlayer.setSprinting(true);
-                    double horizontalSpeed = Utils.getHorizontalSpeed();
+                    double horizontalSpeed = GeneralUtils.getHorizontalSpeed();
                     double additionalSpeed = 0.4847 * ((speed.getInput() - 1.0) / 3.0 + 1.0);
                     if (horizontalSpeed < additionalSpeed) {
                         horizontalSpeed = additionalSpeed;
                     }
-                    Utils.setSpeed(horizontalSpeed);
+                    GeneralUtils.setSpeed(horizontalSpeed);
                     hopping = true;
                 }
                 break;

@@ -4,36 +4,34 @@ import keystrokesmod.Raven;
 import keystrokesmod.event.Render3DEvent;
 import keystrokesmod.module.Module;
 import keystrokesmod.module.impl.world.AntiBot;
-import keystrokesmod.module.setting.impl.ButtonSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.RenderUtils;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.ButtonSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.RenderUtils;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 
 import java.awt.*;
-import java.util.Iterator;
 
 public class Tracers extends Module {
-    public ButtonSetting a;
-    public SliderSetting b;
-    public SliderSetting c;
-    public SliderSetting d;
-    public ButtonSetting e;
-    public SliderSetting f;
+    public ButtonSetting showInvis;
+    public SliderSetting red;
+    public SliderSetting green;
+    public SliderSetting blue;
+    public ButtonSetting rainbow;
+    public SliderSetting lineWidth;
     private boolean g;
     private int rgb_c = 0;
 
     public Tracers() {
-        super("Tracers", Module.category.render, 0);
-        this.registerSetting(a = new ButtonSetting("Show invis", true));
-        this.registerSetting(f = new SliderSetting("Line Width", 1.0D, 1.0D, 5.0D, 1.0D));
-        this.registerSetting(b = new SliderSetting("Red", 0.0D, 0.0D, 255.0D, 1.0D));
-        this.registerSetting(c = new SliderSetting("Green", 255.0D, 0.0D, 255.0D, 1.0D));
-        this.registerSetting(d = new SliderSetting("Blue", 0.0D, 0.0D, 255.0D, 1.0D));
-        this.registerSetting(e = new ButtonSetting("Rainbow", false));
+        super("Tracers", Category.render, 0);
+        this.registerSetting(showInvis = new ButtonSetting("Show invis", true));
+        this.registerSetting(lineWidth = new SliderSetting("Line Width", 1.0D, 1.0D, 5.0D, 1.0D));
+        this.registerSetting(red = new SliderSetting("Red", 0.0D, 0.0D, 255.0D, 1.0D));
+        this.registerSetting(green = new SliderSetting("Green", 255.0D, 0.0D, 255.0D, 1.0D));
+        this.registerSetting(blue = new SliderSetting("Blue", 0.0D, 0.0D, 255.0D, 1.0D));
+        this.registerSetting(rainbow = new ButtonSetting("Rainbow", false));
     }
 
     public void onEnable() {
@@ -56,43 +54,33 @@ public class Tracers extends Module {
     }
 
     public void guiUpdate() {
-        this.rgb_c = (new Color((int) b.getInput(), (int) c.getInput(), (int) d.getInput())).getRGB();
+        this.rgb_c = (new Color((int) red.getInput(), (int) green.getInput(), (int) blue.getInput())).getRGB();
     }
 
     @EventTarget
     public void o(Render3DEvent ev) {
-        if (Utils.nullCheck()) {
-            int rgb = e.isToggled() ? Utils.getChroma(2L, 0L) : this.rgb_c;
-            Iterator var3;
-            if (Raven.debugger) {
-                var3 = mc.theWorld.loadedEntityList.iterator();
+        if (GeneralUtils.nullCheck()) {
+            int rgb = rainbow.isToggled() ? GeneralUtils.getChroma(2L, 0L) : this.rgb_c;
 
-                while (var3.hasNext()) {
-                    Entity en = (Entity) var3.next();
+            for (Entity en : mc.theWorld.loadedEntityList) {
+                if (Raven.debugger) {
                     if (en instanceof EntityLivingBase && en != mc.thePlayer) {
-                        RenderUtils.dtl(en, rgb, (float) f.getInput());
+                        RenderUtils.dtl(en, rgb, (float) lineWidth.getInput());
                     }
-                }
+                } else {
+                    if (en instanceof EntityLivingBase) {
+                        if (en == mc.thePlayer)
+                            continue;
 
-            } else {
-                var3 = mc.theWorld.playerEntities.iterator();
+                        if (((EntityLivingBase) en).deathTime != 0)
+                            continue;
 
-                while (true) {
-                    EntityPlayer en;
-                    do {
-                        do {
-                            do {
-                                if (!var3.hasNext()) {
-                                    return;
-                                }
+                        if (!showInvis.isToggled() && en.isInvisible())
+                            continue;
 
-                                en = (EntityPlayer) var3.next();
-                            } while (en == mc.thePlayer);
-                        } while (en.deathTime != 0);
-                    } while (!a.isToggled() && en.isInvisible());
-
-                    if (!AntiBot.isBot(en)) {
-                        RenderUtils.dtl(en, rgb, (float) f.getInput());
+                        if (!AntiBot.isBot(en)) {
+                            RenderUtils.dtl(en, rgb, (float) lineWidth.getInput());
+                        }
                     }
                 }
             }

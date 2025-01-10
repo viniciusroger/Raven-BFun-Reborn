@@ -2,9 +2,9 @@ package keystrokesmod.module.impl.other;
 
 import keystrokesmod.event.ReceivePacketEvent;
 import keystrokesmod.module.Module;
-import keystrokesmod.module.setting.impl.DescriptionSetting;
-import keystrokesmod.module.setting.impl.SliderSetting;
-import keystrokesmod.utility.Utils;
+import keystrokesmod.setting.impl.DescriptionSetting;
+import keystrokesmod.setting.impl.SliderSetting;
+import keystrokesmod.util.GeneralUtils;
 import net.lenni0451.asmevents.event.EventTarget;
 
 public class LatencyAlerts extends Module {
@@ -14,7 +14,7 @@ public class LatencyAlerts extends Module {
     private long lastPacket;
     private long lastAlert;
     public LatencyAlerts() {
-        super("Latency Alerts", category.other);
+        super("Latency Alerts", Category.other);
         this.registerSetting(description = new DescriptionSetting("Detects packet loss."));
         this.registerSetting(interval = new SliderSetting("Alert interval", 3.0, 0.0, 5.0, 0.1, " second"));
         this.registerSetting(highLatency = new SliderSetting("High latency", 0.5, 0.1, 5.0, 0.1, " second"));
@@ -33,7 +33,7 @@ public class LatencyAlerts extends Module {
         }
         long currentMs = System.currentTimeMillis();
         if (currentMs - lastPacket >= highLatency.getInput() * 1000 && currentMs - lastAlert >= interval.getInput() * 1000) {
-            Utils.sendMessage("&7Packet loss detected: " + "§c" + Math.abs(System.currentTimeMillis() - lastPacket) + "&7ms");
+            GeneralUtils.sendMessage("&7Packet loss detected: " + "§c" + Math.abs(System.currentTimeMillis() - lastPacket) + "&7ms");
             lastAlert = System.currentTimeMillis();
         }
     }
