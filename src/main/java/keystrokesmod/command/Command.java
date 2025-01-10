@@ -31,8 +31,10 @@ public class Command {
 			for (String aliasName : alias) {
 				temp.append(aliasName).append("/");
 			}
+
+			return temp.substring(0, temp.toString().length() - 1);
 		}
 
-		return temp.substring(0, temp.toString().length() - 1);
+		return temp.toString();
 	}
 }
