@@ -1,8 +1,9 @@
-package keystrokesmod.module.impl.player;
+package keystrokesmod.module.impl.world;
 
 import keystrokesmod.event.PreMotionEvent;
 import keystrokesmod.module.Module;
 import keystrokesmod.manager.ModuleManager;
+import keystrokesmod.module.impl.player.SafeWalk;
 import keystrokesmod.setting.impl.ButtonSetting;
 import keystrokesmod.setting.impl.DescriptionSetting;
 import keystrokesmod.setting.impl.SliderSetting;
@@ -22,7 +23,7 @@ public class Tower extends Module {
     private boolean wasTowering;
     private int offGroundTicks;
     public Tower() {
-        super("Tower", Category.player);
+        super("Tower", Category.world);
         this.registerSetting(new DescriptionSetting("Works with Safewalk & Scaffold"));
         this.registerSetting(mode = new SliderSetting("Mode", modes, 0));
         this.registerSetting(slowedSpeed = new SliderSetting("Slowed speed", 2, 0, 9, 0.1));

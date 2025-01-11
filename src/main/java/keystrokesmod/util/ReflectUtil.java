@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
+import net.minecraft.network.play.server.S18PacketEntityTeleport;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -49,6 +50,7 @@ public class ReflectUtil {
     public static Field fallDistance;
     public static Field thirdPersonDistance;
     public static Method mouseClicked;
+    public static Field s18PosX, s18PosZ;
 
     public static boolean sendMessage = false;
 
@@ -63,6 +65,16 @@ public class ReflectUtil {
             if (leftClickCounter != null) {
                 leftClickCounter.setAccessible(true);
             }
+
+            s18PosX = ReflectionHelper.findField(S18PacketEntityTeleport.class, "field_149456_b", "posX");
+
+            if (s18PosX != null)
+                s18PosX.setAccessible(true);
+
+            s18PosZ = ReflectionHelper.findField(S18PacketEntityTeleport.class, "field_149454_d", "posZ");
+
+            if (s18PosZ != null)
+                s18PosZ.setAccessible(true);
 
             jumpTicks = ReflectionHelper.findField(EntityLivingBase.class, "field_70773_bE", "jumpTicks");
 

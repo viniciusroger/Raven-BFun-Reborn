@@ -2,8 +2,10 @@ package keystrokesmod.mixin.impl.client;
 
 import keystrokesmod.event.MouseEvent;
 import keystrokesmod.event.TickEvent;
+import keystrokesmod.manager.ModuleManager;
 import net.lenni0451.asmevents.EventManager;
 import net.lenni0451.asmevents.event.enums.EnumEventType;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
@@ -30,15 +32,21 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.client.C16PacketClientStatus;
 import net.minecraft.profiler.Profiler;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.ReportedException;
 import net.minecraft.world.EnumDifficulty;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
@@ -119,6 +127,55 @@ public abstract class MixinMinecraft {
 	@Shadow public EffectRenderer effectRenderer;
 
 	@Shadow private NetworkManager myNetworkManager;
+
+	@Shadow public MovingObjectPosition objectMouseOver;
+
+	@Shadow @Final private static Logger logger;
+
+	@Inject(method = "clickMouse", at = @At("HEAD"), cancellable = true)
+	public void onClickMouse(CallbackInfo ci) {
+		if (ModuleManager.noHitDelay.isEnabled()) {
+			switch ((int) ModuleManager.noHitDelay.mode.getInput()) {
+				case 0:
+					this.leftClickCounter = 0;
+
+					this.thePlayer.swingItem();
+
+					if (this.objectMouseOver == null)
+					{
+						logger.error("Null returned as \'hitResult\', this shouldn\'t happen!");
+					}
+					else
+					{
+						switch (this.objectMouseOver.typeOfHit)
+						{
+							case ENTITY:
+								this.playerController.attackEntity(this.thePlayer, this.objectMouseOver.entityHit);
+								break;
+							case BLOCK:
+								BlockPos blockpos = this.objectMouseOver.getBlockPos();
+
+								if (this.theWorld.getBlockState(blockpos).getBlock().getMaterial() != Material.air)
+								{
+									this.playerController.clickBlock(blockpos, this.objectMouseOver.sideHit);
+									break;
+								}
+						}
+					}
+
+					ci.cancel();
+					break;
+				case 1:
+					this.leftClickCounter = 0;
+			}
+		}
+	}
+
+	@Inject(method = "clickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/PlayerControllerMP;isNotCreative()Z", ordinal = 1, shift = At.Shift.BEFORE), cancellable = true)
+	public void onMissClick(CallbackInfo ci) {
+		if (ModuleManager.noMissClick.isEnabled())
+			ci.cancel();
+	}
 
 	/**
 	 * @author a
@@ -226,10 +283,7 @@ public abstract class MixinMinecraft {
 
 			while (Mouse.next())
 			{
-				MouseEvent mouseEvent = new MouseEvent();
-				EventManager.call(mouseEvent);
-
-				if (mouseEvent.isCancelled()) continue;
+				if (EventManager.call(new MouseEvent()).isCancelled()) continue;
 
 				if (net.minecraftforge.client.ForgeHooksClient.postMouseEvent()) continue;
 

@@ -1,4 +1,4 @@
-package keystrokesmod.module.impl.combat;
+package keystrokesmod.module.impl.ghost;
 
 import keystrokesmod.event.LivingUpdateEvent;
 import keystrokesmod.module.Module;
@@ -18,7 +18,7 @@ public class Velocity extends Module {
     private ButtonSetting disableS;
 
     public Velocity() {
-        super("Velocity", Category.combat, 0);
+        super("Velocity", Category.ghost, 0);
         this.registerSetting(horizontal = new SliderSetting("Horizontal", 90.0D, 0.0D, 100.0D, 1.0D));
         this.registerSetting(vertical = new SliderSetting("Vertical", 100.0D, 0.0D, 100.0D, 1.0D));
         this.registerSetting(chance = new SliderSetting("Chance", 100.0D, 0.0D, 100.0D, 1.0D, "%"));

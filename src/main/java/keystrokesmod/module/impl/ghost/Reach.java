@@ -1,4 +1,4 @@
-package keystrokesmod.module.impl.combat;
+package keystrokesmod.module.impl.ghost;
 
 import keystrokesmod.event.MouseEvent;
 import keystrokesmod.module.Module;
@@ -30,9 +30,9 @@ public class Reach extends Module {
     public static ButtonSetting hitThroughBlocks;
 
     public Reach() {
-        super("Reach", Category.combat, 0);
-        this.registerSetting(min = new SliderSetting("Min", 3.1D, 3.0D, 6.0D, 0.05D));
-        this.registerSetting(max = new SliderSetting("Max", 3.3D, 3.0D, 6.0D, 0.05D));
+        super("Reach", Category.ghost, 0);
+        this.registerSetting(min = new SliderSetting("Min", 3.1D, 3.0D, 6.0D, 0.01));
+        this.registerSetting(max = new SliderSetting("Max", 3.3D, 3.0D, 6.0D, 0.01));
         this.registerSetting(reachType = new SliderSetting("Reach Type", new String[]{"Normal", "Raven"}, 0));
         this.registerSetting(weaponOnly = new ButtonSetting("Weapon only", false));
         this.registerSetting(movingOnly = new ButtonSetting("Moving only", false));

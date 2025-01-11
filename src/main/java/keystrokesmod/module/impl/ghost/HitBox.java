@@ -1,4 +1,4 @@
-package keystrokesmod.module.impl.combat;
+package keystrokesmod.module.impl.ghost;
 
 import keystrokesmod.event.MouseEvent;
 import keystrokesmod.event.Render3DEvent;
@@ -34,9 +34,9 @@ public class HitBox extends Module {
     private MovingObjectPosition mv;
 
     public HitBox() {
-        super("HitBox", Category.combat, 0);
+        super("HitBox", Category.ghost, 0);
         this.registerSetting(expand = new SliderSetting("Expand", 0.04, 0, 1.0, 0.01));
-		this.registerSetting(multiplier = new SliderSetting("Multiplier", 1.2, 1.0, 5.0, 0.05, "x"));
+		this.registerSetting(multiplier = new SliderSetting("Multiplier", 1.2, 1.0, 5.0, 0.01, "x"));
         this.registerSetting(hitboxType = new SliderSetting("Hitbox Type", new String[]{"Normal", "Raven"}, 1));
 		this.registerSetting(playersOnly = new ButtonSetting("Players only", true));
         this.registerSetting(showHitbox = new ButtonSetting("Show new hitbox", false));
