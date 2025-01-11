@@ -4,7 +4,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import keystrokesmod.event.Render3DEvent;
 import keystrokesmod.manager.ModuleManager;
-import keystrokesmod.module.impl.combat.Reach;
+import keystrokesmod.module.impl.ghost.Reach;
 import net.lenni0451.asmevents.EventManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

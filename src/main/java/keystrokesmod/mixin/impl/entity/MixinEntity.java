@@ -1,7 +1,7 @@
 package keystrokesmod.mixin.impl.entity;
 
 import keystrokesmod.manager.ModuleManager;
-import keystrokesmod.module.impl.combat.HitBox;
+import keystrokesmod.module.impl.ghost.HitBox;
 import keystrokesmod.module.impl.player.SafeWalk;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
@@ -127,6 +127,10 @@ public abstract class MixinEntity {
     public float rotationYaw;
 
     @Shadow public abstract float getCollisionBorderSize();
+
+    @Shadow protected abstract Vec3 getVectorForRotation(float pitch, float yaw);
+
+    @Shadow public float rotationPitch;
 
     /**
      * @author a
@@ -428,5 +432,11 @@ public abstract class MixinEntity {
 
             cir.setReturnValue(HitBox.getExpand(0.1F));
         }
+    }
+
+    @Inject(method = "getLook", at = @At("HEAD"), cancellable = true)
+    public void onGetLook(float partialTicks, CallbackInfoReturnable<Vec3> cir) {
+        if (ModuleManager.mouseDelayFix.isEnabled())
+            cir.setReturnValue(this.getVectorForRotation(this.rotationPitch, this.rotationYaw));
     }
 }

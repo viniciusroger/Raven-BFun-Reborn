@@ -14,11 +14,15 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MathHelper;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.EXTPackedDepthStencil;
 import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -33,20 +37,167 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> exte
     @Shadow
     protected ModelBase mainModel;
 
+    @Shadow protected boolean renderOutlines;
+
+    @Shadow @Final private static Logger logger;
+
+    @Shadow protected abstract void unsetBrightness();
+
+    @Shadow protected abstract boolean setDoRenderBrightness(T entityLivingBaseIn, float partialTicks);
+
+    @Shadow protected abstract void unsetScoreTeamColor();
+
+    @Shadow protected abstract void renderLayers(T entitylivingbaseIn, float p_177093_2_, float p_177093_3_, float partialTicks, float p_177093_5_, float p_177093_6_, float p_177093_7_, float p_177093_8_);
+
+    @Shadow protected abstract boolean setScoreTeamColor(T entityLivingBaseIn);
+
+    @Shadow protected abstract void preRenderCallback(T entitylivingbaseIn, float partialTickTime);
+
+    @Shadow protected abstract void rotateCorpse(T bat, float p_77043_2_, float p_77043_3_, float partialTicks);
+
+    @Shadow protected abstract float handleRotationFloat(T livingBase, float partialTicks);
+
+    @Shadow protected abstract void renderLivingAt(T entityLivingBaseIn, double x, double y, double z);
+
+    @Shadow protected abstract float interpolateRotation(float par1, float par2, float par3);
+
+    @Shadow protected abstract float getSwingProgress(T livingBase, float partialTickTime);
+
     protected MixinRendererLivingEntity(RenderManager p_i46156_1_, ModelBase p_i46156_2_, float p_i46156_3_) {
         super(p_i46156_1_);
         this.mainModel = p_i46156_2_;
         this.shadowSize = p_i46156_3_;
     }
 
-    @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("HEAD"))
-    public void onPreDoRender(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
-        EventManager.call(new RenderEntityEvent(EnumEventType.PRE, entity));
-    }
+    /**
+     * @author a
+     * @reason a
+     */
+    @Overwrite
+    public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks)
+    {
+        RenderEntityEvent event = new RenderEntityEvent(EnumEventType.PRE, entity, (RendererLivingEntity) (Object) this, x, y, z, partialTicks);
 
-    @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("TAIL"))
-    public void onPostDoRender(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
-        EventManager.call(new RenderEntityEvent(EnumEventType.POST, entity));
+        if (EventManager.call(event).isCancelled())
+            return;
+
+        x = event.getX();
+        y = event.getY();
+        z = event.getZ();
+
+        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Pre(entity, (RendererLivingEntity) (Object) this, x, y, z))) return;
+        GlStateManager.pushMatrix();
+        GlStateManager.disableCull();
+        this.mainModel.swingProgress = this.getSwingProgress(entity, partialTicks);
+        boolean shouldSit = entity.isRiding() && (entity.ridingEntity != null && entity.ridingEntity.shouldRiderSit());
+        this.mainModel.isRiding = shouldSit;
+        this.mainModel.isChild = entity.isChild();
+
+        try
+        {
+            float f = this.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, partialTicks);
+            float f1 = this.interpolateRotation(entity.prevRotationYawHead, entity.rotationYawHead, partialTicks);
+            float f2 = f1 - f;
+
+            if (shouldSit && entity.ridingEntity instanceof EntityLivingBase)
+            {
+                EntityLivingBase entitylivingbase = (EntityLivingBase)entity.ridingEntity;
+                f = this.interpolateRotation(entitylivingbase.prevRenderYawOffset, entitylivingbase.renderYawOffset, partialTicks);
+                f2 = f1 - f;
+                float f3 = MathHelper.wrapAngleTo180_float(f2);
+
+                if (f3 < -85.0F)
+                {
+                    f3 = -85.0F;
+                }
+
+                if (f3 >= 85.0F)
+                {
+                    f3 = 85.0F;
+                }
+
+                f = f1 - f3;
+
+                if (f3 * f3 > 2500.0F)
+                {
+                    f += f3 * 0.2F;
+                }
+            }
+
+            float f7 = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+            this.renderLivingAt(entity, x, y, z);
+            float f8 = this.handleRotationFloat(entity, partialTicks);
+            this.rotateCorpse(entity, f8, f, partialTicks);
+            GlStateManager.enableRescaleNormal();
+            GlStateManager.scale(-1.0F, -1.0F, 1.0F);
+            this.preRenderCallback(entity, partialTicks);
+            float f4 = 0.0625F;
+            GlStateManager.translate(0.0F, -1.5078125F, 0.0F);
+            float f5 = entity.prevLimbSwingAmount + (entity.limbSwingAmount - entity.prevLimbSwingAmount) * partialTicks;
+            float f6 = entity.limbSwing - entity.limbSwingAmount * (1.0F - partialTicks);
+
+            if (entity.isChild())
+            {
+                f6 *= 3.0F;
+            }
+
+            if (f5 > 1.0F)
+            {
+                f5 = 1.0F;
+            }
+
+            GlStateManager.enableAlpha();
+            this.mainModel.setLivingAnimations(entity, f6, f5, partialTicks);
+            this.mainModel.setRotationAngles(f6, f5, f8, f2, f7, 0.0625F, entity);
+
+            if (this.renderOutlines)
+            {
+                boolean flag1 = this.setScoreTeamColor(entity);
+                this.renderModel(entity, f6, f5, f8, f2, f7, 0.0625F);
+
+                if (flag1)
+                {
+                    this.unsetScoreTeamColor();
+                }
+            }
+            else
+            {
+                boolean flag = this.setDoRenderBrightness(entity, partialTicks);
+                this.renderModel(entity, f6, f5, f8, f2, f7, 0.0625F);
+
+                if (flag)
+                {
+                    this.unsetBrightness();
+                }
+
+                GlStateManager.depthMask(true);
+
+                if (!(entity instanceof EntityPlayer) || !((EntityPlayer)entity).isSpectator())
+                {
+                    this.renderLayers(entity, f6, f5, partialTicks, f8, f2, f7, 0.0625F);
+                }
+            }
+
+            GlStateManager.disableRescaleNormal();
+        }
+        catch (Exception exception)
+        {
+            logger.error((String)"Couldn\'t render entity", (Throwable)exception);
+        }
+
+        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+        GlStateManager.enableTexture2D();
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+        GlStateManager.enableCull();
+        GlStateManager.popMatrix();
+
+        if (!this.renderOutlines)
+        {
+            super.doRender(entity, x, y, z, entityYaw, partialTicks);
+        }
+
+        EventManager.call(new RenderEntityEvent(EnumEventType.POST, entity, (RendererLivingEntity) (Object) this, x, y, z, partialTicks));
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Post(entity, (RendererLivingEntity) (Object) this, x, y, z));
     }
 
     /**

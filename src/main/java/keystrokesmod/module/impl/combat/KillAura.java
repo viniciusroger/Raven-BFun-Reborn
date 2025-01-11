@@ -1,6 +1,7 @@
 package keystrokesmod.module.impl.combat;
 
 import keystrokesmod.event.*;
+import keystrokesmod.module.impl.ghost.Reach;
 import keystrokesmod.util.PacketUtils;
 import keystrokesmod.module.Module;
 import keystrokesmod.manager.ModuleManager;

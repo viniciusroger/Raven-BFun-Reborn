@@ -173,13 +173,15 @@ public class Module {
 
     public enum Category {
         clicker,
-        combat,
-        movement,
-        player,
-        world,
-        render,
-        other,
         client,
-        profiles
+        combat,
+        ghost,
+        movement,
+        other,
+        player,
+        profiles,
+        render,
+        tweaks,
+        world
     }
 }

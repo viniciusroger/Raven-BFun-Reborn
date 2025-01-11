@@ -1,4 +1,4 @@
-package keystrokesmod.module.impl.combat;
+package keystrokesmod.module.impl.ghost;
 
 import keystrokesmod.event.PreMotionEvent;
 import keystrokesmod.module.Module;
@@ -24,7 +24,7 @@ public class RodAimbot extends Module {
     private EntityPlayer entity;
 
     public RodAimbot() {
-        super("RodAimbot", Category.combat, 0);
+        super("RodAimbot", Category.ghost, 0);
         this.registerSetting(fov = new SliderSetting("FOV", 180, 30, 360, 4));
         this.registerSetting(predicatedTicks = new SliderSetting("Predicted ticks", 5.0, 0.0, 20.0, 1.0));
         this.registerSetting(distance = new SliderSetting("Distance", 6, 3, 30, 0.5));

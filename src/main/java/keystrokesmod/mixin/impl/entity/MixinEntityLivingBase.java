@@ -14,6 +14,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import org.spongepowered.asm.mixin.Mixin;
@@ -140,5 +141,11 @@ public abstract class MixinEntityLivingBase extends Entity {
         if (ModuleManager.potions != null && ModuleManager.potions.isEnabled() && ((p_isPotionActive_1_ == Potion.confusion && ModuleManager.potions.removeNausea.isToggled()) || (p_isPotionActive_1_ == Potion.blindness && ModuleManager.potions.removeBlindness.isToggled()))) {
             callbackInfoReturnable.setReturnValue(false);
         }
+    }
+
+    @Inject(method = "getLook", at = @At("HEAD"), cancellable = true)
+    public void onGetLook(float partialTicks, CallbackInfoReturnable<Vec3> cir) {
+        if (ModuleManager.mouseDelayFix.isEnabled())
+            cir.setReturnValue(this.getVectorForRotation(this.rotationPitch, this.rotationYaw));
     }
 }

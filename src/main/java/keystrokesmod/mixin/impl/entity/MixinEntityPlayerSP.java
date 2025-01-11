@@ -3,7 +3,6 @@ package keystrokesmod.mixin.impl.entity;
 import com.mojang.authlib.GameProfile;
 import keystrokesmod.event.*;
 import keystrokesmod.manager.ModuleManager;
-import keystrokesmod.module.impl.combat.WTap;
 import keystrokesmod.module.impl.movement.NoSlow;
 import keystrokesmod.util.RotationUtils;
 import net.lenni0451.asmevents.EventManager;
@@ -98,10 +97,7 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
 
     @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true)
     public void onSendMessage(String message, CallbackInfo ci) {
-        SendMessageEvent event = new SendMessageEvent(message);
-        EventManager.call(event);
-
-        if (event.isCancelled())
+        if (EventManager.call(new SendMessageEvent(message)).isCancelled())
             ci.cancel();
     }
 
@@ -307,9 +303,9 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
             this.setSprinting(true);
         }
 
-        if (this.isSprinting() && ((this.movementInput.moveForward < f || this.isCollidedHorizontally || !flag3) || (ModuleManager.scaffold != null && ModuleManager.scaffold.isEnabled() && !ModuleManager.scaffold.sprint() && !ModuleManager.tower.canSprint()) || (ModuleManager.wTap.isEnabled() && WTap.stopSprint))) {
+        if (this.isSprinting() && ((this.movementInput.moveForward < f || this.isCollidedHorizontally || !flag3) || (ModuleManager.scaffold != null && ModuleManager.scaffold.isEnabled() && !ModuleManager.scaffold.sprint() && !ModuleManager.tower.canSprint()) || (ModuleManager.moreKnockback.isEnabled() && ModuleManager.moreKnockback.resetSprint))) {
             this.setSprinting(false);
-            WTap.stopSprint = false;
+            ModuleManager.moreKnockback.resetSprint = false;
         }
 
         if (this.capabilities.allowFlying) {
