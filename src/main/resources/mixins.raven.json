@@ -21,6 +21,7 @@
   "client": [
     "client.MixinMinecraft",
     "client.MixinPlayerControllerMP",
+    "network.MixinNetHandlerPlayClient",
     "render.MixinGuiInGame",
     "render.MixinGuiSpectator",
     "render.MixinRender"

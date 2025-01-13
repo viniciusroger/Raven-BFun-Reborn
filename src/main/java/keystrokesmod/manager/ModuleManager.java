@@ -35,6 +35,7 @@ public class ModuleManager {
     public static Module reach;
     public static BedESP bedESP;
     public static HUD hud;
+    public static Misplace misplace;
     public static Module timer;
     public static Module fly;
     public static Potions potions;
@@ -73,7 +74,7 @@ public class ModuleManager {
         this.addModule(new InvManager());
         this.addModule(scaffold = new Scaffold());
         this.addModule(new AntiAFK());
-        this.addModule(new Misplace());
+        this.addModule(misplace = new Misplace());
         this.addModule(new Boost());
         this.addModule(new AutoTool());
         this.addModule(noHurtCam = new NoHurtCam());

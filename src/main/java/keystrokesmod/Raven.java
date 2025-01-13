@@ -71,39 +71,37 @@ public class Raven {
 
     @EventTarget
     public void onTick(TickEvent e) {
-        if (e.getType() == EnumEventType.POST) {
-            if (GeneralUtils.nullCheck()) {
-                if (ReflectUtil.sendMessage) {
-                    GeneralUtils.sendMessage("&cThere was an error, relaunch the game.");
-                    ReflectUtil.sendMessage = false;
+        if (GeneralUtils.nullCheck()) {
+            if (ReflectUtil.sendMessage) {
+                GeneralUtils.sendMessage("&cThere was an error, relaunch the game.");
+                ReflectUtil.sendMessage = false;
+            }
+            for (Module module : ModuleManager.getModules()) {
+                if (mc.currentScreen == null && module.canBeEnabled()) {
+                    module.keybind();
+                } else if (mc.currentScreen instanceof ClickGui) {
+                    module.guiUpdate();
                 }
-                for (Module module : ModuleManager.getModules()) {
-                    if (mc.currentScreen == null && module.canBeEnabled()) {
-                        module.keybind();
-                    } else if (mc.currentScreen instanceof ClickGui) {
-                        module.guiUpdate();
-                    }
 
-                    if (module.isEnabled()) {
-                        module.onUpdate();
-                    }
-
-                    for (Setting setting : module.getSettings()) {
-                        if (setting instanceof SliderSetting)
-                            ((SliderSetting) setting).correctValue();
-                    }
+                if (module.isEnabled()) {
+                    module.onUpdate();
                 }
-                for (Profile profile : Raven.profileManager.profiles) {
-                    if (mc.currentScreen == null) {
-                        profile.getModule().keybind();
-                    }
+
+                for (Setting setting : module.getSettings()) {
+                    if (setting instanceof SliderSetting)
+                        ((SliderSetting) setting).correctValue();
                 }
             }
-
-            if (isKeyStrokeConfigGuiToggled) {
-                isKeyStrokeConfigGuiToggled = false;
-                mc.displayGuiScreen(new KeyStrokeConfigGui());
+            for (Profile profile : Raven.profileManager.profiles) {
+                if (mc.currentScreen == null) {
+                    profile.getModule().keybind();
+                }
             }
+        }
+
+        if (isKeyStrokeConfigGuiToggled) {
+            isKeyStrokeConfigGuiToggled = false;
+            mc.displayGuiScreen(new KeyStrokeConfigGui());
         }
     }
 

@@ -1,6 +1,7 @@
 package keystrokesmod.module.impl.ghost;
 
 import keystrokesmod.event.PreMotionEvent;
+import keystrokesmod.event.TickEvent;
 import keystrokesmod.module.Module;
 import keystrokesmod.module.impl.world.AntiBot;
 import keystrokesmod.setting.impl.ButtonSetting;
@@ -56,7 +57,7 @@ public class RodAimbot extends Module {
     }
 
     @EventTarget
-    public void onPreMotion(PreMotionEvent event) {
+    public void onTick(TickEvent event) {
         if (!GeneralUtils.nullCheck()) {
             return;
         }
@@ -65,11 +66,13 @@ public class RodAimbot extends Module {
                 return;
             }
             float[] rotations = RotationUtils.getRotationsPredicated(entity, (int)predicatedTicks.getInput());
-            event.setYaw(rotations[0]);
-            event.setPitch(rotations[1]);
+            mc.thePlayer.rotationYaw = rotations[0];
+            mc.thePlayer.rotationPitch = rotations[1];
+
             if (!rightClick && rotate) {
                 rotate = false;
             }
+
             if (rightClick) {
                 ReflectUtil.rightClick();
                 rightClick = false;

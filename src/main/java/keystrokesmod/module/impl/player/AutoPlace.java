@@ -1,6 +1,8 @@
 package keystrokesmod.module.impl.player;
 
+import keystrokesmod.event.Render2DEvent;
 import keystrokesmod.event.Render3DEvent;
+import keystrokesmod.event.TickEvent;
 import keystrokesmod.module.Module;
 import keystrokesmod.manager.ModuleManager;
 import keystrokesmod.setting.impl.ButtonSetting;
@@ -24,6 +26,7 @@ import org.lwjgl.input.Mouse;
 public class AutoPlace extends Module {
     private SliderSetting frameDelay;
     private SliderSetting minPlaceDelay;
+    private SliderSetting autoPlaceEvent;
     private ButtonSetting disableLeft;
     private ButtonSetting holdRight;
     private ButtonSetting fastPlaceJump;
@@ -38,7 +41,8 @@ public class AutoPlace extends Module {
         super("AutoPlace", Category.player, 0);
         this.registerSetting(new DescriptionSetting("Best with safewalk."));
         this.registerSetting(frameDelay = new SliderSetting("Frame delay", 8.0D, 0.0D, 30.0D, 1.0D));
-        this.registerSetting(minPlaceDelay = new SliderSetting("Min place delay", 60.0, 25.0, 500.0, 5.0));
+        this.registerSetting(minPlaceDelay = new SliderSetting("Min place delay", 60.0, 0.0, 500.0, 5.0));
+        this.registerSetting(autoPlaceEvent = new SliderSetting("AutoPlace Event", new String[]{"Tick", "Render2D", "Render3D"}, 0));
         this.registerSetting(disableLeft = new ButtonSetting("Disable left", false));
         this.registerSetting(holdRight = new ButtonSetting("Hold right", true));
         this.registerSetting(fastPlaceJump = new ButtonSetting("Fast place on jump", true));
@@ -79,8 +83,25 @@ public class AutoPlace extends Module {
         }
     }
 
-    @EventTarget(priority = EnumEventPriority.HIGHEST)
-    public void bh(Render3DEvent ev) {
+    @EventTarget
+    public void onTick(TickEvent event) {
+        if (autoPlaceEvent.getInput() == 0)
+            onEvent();
+    }
+
+    @EventTarget
+    public void onRender2D(Render2DEvent ev) {
+        if (autoPlaceEvent.getInput() == 1)
+            onEvent();
+    }
+
+    @EventTarget
+    public void onRender3D(Render3DEvent event) {
+        if (autoPlaceEvent.getInput() == 2)
+            onEvent();
+    }
+
+    private void onEvent() {
         if (GeneralUtils.nullCheck()) {
             if (mc.currentScreen == null && !mc.thePlayer.capabilities.isFlying) {
                 ItemStack i = mc.thePlayer.getHeldItem();
@@ -89,7 +110,7 @@ public class AutoPlace extends Module {
                     if (disableLeft.isToggled() && Mouse.isButtonDown(0)) {
                         return;
                     }
-                    if (m != null && m.typeOfHit == MovingObjectType.BLOCK && m.sideHit != EnumFacing.UP && m.sideHit != EnumFacing.DOWN) {
+                    if (m != null && m.typeOfHit == MovingObjectType.BLOCK) {
                         if (this.lm != null && (double) this.f < frameDelay.getInput()) {
                             ++this.f;
                         } else {

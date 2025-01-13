@@ -126,8 +126,6 @@ public abstract class MixinEntity {
     @Shadow
     public float rotationYaw;
 
-    @Shadow public abstract float getCollisionBorderSize();
-
     @Shadow protected abstract Vec3 getVectorForRotation(float pitch, float yaw);
 
     @Shadow public float rotationPitch;
